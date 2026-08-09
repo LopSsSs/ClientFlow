@@ -30,7 +30,7 @@ export async function GET(req) {
     const business = await getBusiness(decoded.userId)
 
     return NextResponse.json({
-      user: { id: user.id, email: user.email },
+      user: { id: user.id, email: user.email, email_verified: user.email_verified },
       business,
     })
   } catch (error) {

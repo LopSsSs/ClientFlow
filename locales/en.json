@@ -1,0 +1,62 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "confirm": "Confirm"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "jobs": "Jobs",
+    "invoices": "Invoices",
+    "calendar": "Calendar",
+    "route": "Route",
+    "reports": "Reports",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "settings": {
+    "title": "Business settings",
+    "companyName": "Business name",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "currency": "Currency",
+    "hourlyRate": "Hourly rate (price estimator)",
+    "hourlyRateHint": "Used to suggest labor cost when creating a job (hours × rate).",
+    "save": "Save changes",
+    "saved": "Changes saved"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "signupTitle": "Create account",
+    "email": "Email address",
+    "password": "Password",
+    "businessName": "Business name",
+    "loginButton": "Sign in",
+    "signupButton": "Sign up",
+    "emailNotVerified": "Verify your email address to unlock all features.",
+    "resendVerification": "Resend verification email"
+  },
+  "messageTemplates": {
+    "title": "Message templates",
+    "hint": "Available variables: {{variables}}",
+    "jobReminderLabel": "Job reminder",
+    "invoiceReminderLabel": "Payment reminder",
+    "jobReminderDefault": "Hi {{client_name}}, this is a reminder for your {{job_title}} appointment on {{scheduled_date}} with {{company_name}}.",
+    "invoiceReminderDefault": "Hi {{client_name}}, invoice {{invoice_number}} for {{amount}} with {{company_name}} is due on {{due_date}}. Pay here: {{payment_url}}",
+    "satisfactionSurveyLabel": "Satisfaction survey",
+    "satisfactionSurveyDefault": "Hi {{client_name}}, thanks for choosing {{company_name}} for {{job_title}}. Mind telling us how it went? {{survey_url}}"
+  },
+  "emailVerification": {
+    "subject": "Verify your email address for {{companyName}}",
+    "greeting": "Hello!",
+    "body": "Confirm your email address to activate your account on {{companyName}}.",
+    "cta": "Verify my email",
+    "expiryNote": "This link expires in 24 hours.",
+    "ignoreNote": "If you didn't create this account, you can safely ignore this message."
+  }
+}

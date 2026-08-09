@@ -62,6 +62,10 @@ body {
   .badge-error {
     @apply bg-red-100 text-red-800;
   }
+
+  .badge-warning {
+    @apply bg-orange-100 text-orange-800;
+  }
 }
 
 /* Loading spinner */

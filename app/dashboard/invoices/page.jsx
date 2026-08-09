@@ -5,7 +5,9 @@ import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
 import { getInvoices, getJobs, createInvoice, updateInvoice, deleteInvoice } from '@/lib/api'
 import { generateInvoicePDF, downloadInvoice } from '@/lib/invoiceGenerator'
-import { FileText, Trash2, Plus, X, Download, Eye } from 'lucide-react'
+import { getOverdueInfo } from '@/utils/collections'
+import OverdueBadge from '@/components/OverdueBadge'
+import { FileText, Trash2, Plus, X, Download, Edit2, CreditCard } from 'lucide-react'
 
 export default function InvoicesPage() {
   const { business, user, loading } = useAuth()
@@ -54,10 +56,8 @@ export default function InvoicesPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const invoiceNumber = `INV-${Date.now()}`
       const invoiceData = {
         ...formData,
-        invoice_number: invoiceNumber,
         client_id: formData.client_id || jobs.find(j => j.id === formData.job_id)?.client_id,
         amount: parseFloat(formData.amount) || 0,
         tax: parseFloat(formData.tax) || 0,
@@ -66,13 +66,26 @@ export default function InvoicesPage() {
       if (editingId) {
         await updateInvoice(editingId, invoiceData)
       } else {
-        await createInvoice(business.id, invoiceData)
+        await createInvoice(business.id, { ...invoiceData, invoice_number: `INV-${Date.now()}` })
       }
       resetForm()
       loadInvoices()
     } catch (error) {
       alert('Error al guardar factura: ' + error.message)
     }
+  }
+
+  const handleEdit = (invoice) => {
+    setFormData({
+      job_id: invoice.job_id || '',
+      client_id: invoice.client_id,
+      amount: invoice.amount?.toString() ?? '',
+      tax: invoice.tax?.toString() ?? '0',
+      status: invoice.status,
+      due_date: invoice.due_date ? invoice.due_date.split('T')[0] : '',
+    })
+    setEditingId(invoice.id)
+    setShowForm(true)
   }
 
   const resetForm = () => {
@@ -103,6 +116,7 @@ export default function InvoicesPage() {
     const jobData = jobs.find(j => j.id === invoice.job_id)
     
     const invoiceData = {
+      id: invoice.id,
       invoice_number: invoice.invoice_number,
       amount: invoice.amount,
       tax: invoice.tax,
@@ -129,6 +143,15 @@ export default function InvoicesPage() {
     }
     return badges[status] || 'badge-pending'
   }
+
+  const overdueSummary = invoices.reduce(
+    (acc, inv) => {
+      const { bucket } = getOverdueInfo(inv.due_date, inv.status)
+      if (bucket !== 'none') acc[bucket] += 1
+      return acc
+    },
+    { mild: 0, warning: 0, severe: 0 }
+  )
 
   if (loading || loadingInvoices) {
     return <div className="flex justify-center items-center h-screen">Cargando...</div>
@@ -180,7 +203,9 @@ export default function InvoicesPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-primary">Nueva Factura</h2>
+                <h2 className="text-2xl font-bold text-primary">
+                  {editingId ? 'Editar Factura' : 'Nueva Factura'}
+                </h2>
                 <button onClick={resetForm} className="text-gray-400 hover:text-primary">
                   <X size={24} />
                 </button>
@@ -191,6 +216,7 @@ export default function InvoicesPage() {
                   <label className="block text-sm font-medium mb-2">Trabajo (Opcional)</label>
                   <select
                     value={formData.job_id}
+                    disabled={!!editingId}
                     onChange={(e) => {
                       setFormData({ ...formData, job_id: e.target.value })
                       if (e.target.value) {
@@ -204,7 +230,7 @@ export default function InvoicesPage() {
                         }
                       }
                     }}
-                    className="input-field"
+                    className="input-field disabled:bg-gray-100 disabled:text-gray-500"
                   >
                     <option value="">Selecciona un trabajo</option>
                     {jobs.map((job) => (
@@ -265,7 +291,7 @@ export default function InvoicesPage() {
 
                 <div className="flex gap-2 pt-4">
                   <button type="submit" className="btn-accent flex-1">
-                    Crear Factura
+                    {editingId ? 'Actualizar Factura' : 'Crear Factura'}
                   </button>
                   <button type="button" onClick={resetForm} className="btn-secondary flex-1">
                     Cancelar
@@ -296,6 +322,24 @@ export default function InvoicesPage() {
           </div>
         </div>
 
+        {/* Cobranzas */}
+        {(overdueSummary.mild + overdueSummary.warning + overdueSummary.severe) > 0 && (
+          <div className="card mb-6 border-l-4 border-red-400">
+            <p className="text-gray-600 text-sm mb-2">Cobros pendientes por antigüedad</p>
+            <div className="flex gap-3 flex-wrap">
+              {overdueSummary.mild > 0 && (
+                <span className="badge badge-pending">{overdueSummary.mild} entre 7-29 días</span>
+              )}
+              {overdueSummary.warning > 0 && (
+                <span className="badge badge-warning">{overdueSummary.warning} entre 30-59 días</span>
+              )}
+              {overdueSummary.severe > 0 && (
+                <span className="badge badge-error">{overdueSummary.severe} de 60+ días</span>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <div className="card overflow-x-auto">
           {filteredInvoices.length > 0 ? (
@@ -321,12 +365,20 @@ export default function InvoicesPage() {
                         {invoice.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-3 text-sm whitespace-nowrap">
                       {invoice.due_date
                         ? new Date(invoice.due_date).toLocaleDateString('es-ES')
                         : '-'}
+                      <OverdueBadge dueDate={invoice.due_date} status={invoice.status} />
                     </td>
                     <td className="px-4 py-3 text-center flex justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(invoice)}
+                        className="text-accent hover:text-primary"
+                        title="Editar"
+                      >
+                        <Edit2 size={18} />
+                      </button>
                       <button
                         onClick={() => generatePDF(invoice)}
                         className="text-accent hover:text-primary"
@@ -334,6 +386,15 @@ export default function InvoicesPage() {
                       >
                         <Download size={18} />
                       </button>
+                      {invoice.status !== 'paid' && (
+                        <button
+                          onClick={() => window.open(`/pay/${invoice.id}`, '_blank')}
+                          className="text-accent hover:text-primary"
+                          title="Abrir enlace de pago"
+                        >
+                          <CreditCard size={18} />
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDelete(invoice.id)}
                         className="text-red-500 hover:text-red-700"

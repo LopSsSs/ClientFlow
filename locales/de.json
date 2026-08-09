@@ -1,0 +1,62 @@
+{
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "loading": "Wird geladen...",
+    "error": "Es ist ein Fehler aufgetreten",
+    "confirm": "Bestätigen"
+  },
+  "nav": {
+    "dashboard": "Übersicht",
+    "clients": "Kunden",
+    "jobs": "Aufträge",
+    "invoices": "Rechnungen",
+    "calendar": "Kalender",
+    "route": "Route",
+    "reports": "Berichte",
+    "settings": "Einstellungen",
+    "signOut": "Abmelden"
+  },
+  "settings": {
+    "title": "Unternehmenseinstellungen",
+    "companyName": "Firmenname",
+    "phone": "Telefon",
+    "whatsapp": "WhatsApp",
+    "currency": "Währung",
+    "hourlyRate": "Stundensatz (Preisschätzer)",
+    "hourlyRateHint": "Wird verwendet, um die Arbeitskosten beim Erstellen eines Auftrags vorzuschlagen (Stunden × Satz).",
+    "save": "Änderungen speichern",
+    "saved": "Änderungen gespeichert"
+  },
+  "auth": {
+    "loginTitle": "Anmelden",
+    "signupTitle": "Konto erstellen",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "businessName": "Firmenname",
+    "loginButton": "Anmelden",
+    "signupButton": "Registrieren",
+    "emailNotVerified": "Bestätige deine E-Mail-Adresse, um alle Funktionen freizuschalten.",
+    "resendVerification": "Bestätigungs-E-Mail erneut senden"
+  },
+  "messageTemplates": {
+    "title": "Nachrichtenvorlagen",
+    "hint": "Verfügbare Variablen: {{variables}}",
+    "jobReminderLabel": "Auftragserinnerung",
+    "invoiceReminderLabel": "Zahlungserinnerung",
+    "jobReminderDefault": "Hallo {{client_name}}, dies ist eine Erinnerung an deinen Termin {{job_title}} am {{scheduled_date}} bei {{company_name}}.",
+    "invoiceReminderDefault": "Hallo {{client_name}}, die Rechnung {{invoice_number}} über {{amount}} bei {{company_name}} ist fällig am {{due_date}}. Hier bezahlen: {{payment_url}}",
+    "satisfactionSurveyLabel": "Zufriedenheitsumfrage",
+    "satisfactionSurveyDefault": "Hallo {{client_name}}, danke, dass du dich für {{company_name}} entschieden hast ({{job_title}}). Erzählst du uns, wie es war? {{survey_url}}"
+  },
+  "emailVerification": {
+    "subject": "Bestätige deine E-Mail-Adresse für {{companyName}}",
+    "greeting": "Hallo!",
+    "body": "Bestätige deine E-Mail-Adresse, um dein Konto bei {{companyName}} zu aktivieren.",
+    "cta": "E-Mail bestätigen",
+    "expiryNote": "Dieser Link läuft in 24 Stunden ab.",
+    "ignoreNote": "Wenn du dieses Konto nicht erstellt hast, kannst du diese Nachricht ignorieren."
+  }
+}

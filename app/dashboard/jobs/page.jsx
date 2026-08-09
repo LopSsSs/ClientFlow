@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
 import { getJobs, getClients, createJob, updateJob, deleteJob } from '@/lib/api'
-import { Edit2, Trash2, Plus, X } from 'lucide-react'
+import { estimateLaborCost } from '@/utils/estimator'
+import MarginBadge from '@/components/MarginBadge'
+import RecurringJobsPanel from '@/components/jobs/RecurringJobsPanel'
+import JobPhotosGallery from '@/components/jobs/JobPhotosGallery'
+import { Edit2, Trash2, Plus, X, Wand2 } from 'lucide-react'
 
 export default function JobsPage() {
   const { business, loading } = useAuth()
@@ -24,6 +28,7 @@ export default function JobsPage() {
     duration_hours: '',
     materials_cost: '0',
     labor_cost: '',
+    total_amount: '',
     notes: '',
   })
 
@@ -57,14 +62,12 @@ export default function JobsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const totalAmount = (parseFloat(formData.labor_cost) || 0) + (parseFloat(formData.materials_cost) || 0)
-      
       const jobData = {
         ...formData,
         duration_hours: formData.duration_hours ? parseFloat(formData.duration_hours) : 0,
         materials_cost: parseFloat(formData.materials_cost) || 0,
         labor_cost: parseFloat(formData.labor_cost) || 0,
-        total_amount: totalAmount,
+        total_amount: parseFloat(formData.total_amount) || 0,
       }
 
       if (editingId) {
@@ -90,6 +93,7 @@ export default function JobsPage() {
       duration_hours: '',
       materials_cost: '0',
       labor_cost: '',
+      total_amount: '',
       notes: '',
     })
     setEditingId(null)
@@ -107,10 +111,18 @@ export default function JobsPage() {
       duration_hours: job.duration_hours || '',
       materials_cost: job.materials_cost || '0',
       labor_cost: job.labor_cost || '',
+      total_amount: job.total_amount || '',
       notes: job.notes || '',
     })
     setEditingId(job.id)
     setShowForm(true)
+  }
+
+  const applyRateEstimate = () => {
+    if (!business?.default_hourly_rate) return
+    const hours = parseFloat(formData.duration_hours) || 0
+    const estimated = estimateLaborCost(hours, business.default_hourly_rate)
+    setFormData((prev) => ({ ...prev, labor_cost: estimated.toFixed(2) }))
   }
 
   const handleDelete = async (jobId) => {
@@ -297,15 +309,50 @@ export default function JobsPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Costo de Mano de Obra *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      value={formData.labor_cost}
-                      onChange={(e) => setFormData({ ...formData, labor_cost: e.target.value })}
-                      className="input-field"
-                      required
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={formData.labor_cost}
+                        onChange={(e) => setFormData({ ...formData, labor_cost: e.target.value })}
+                        className="input-field"
+                        required
+                      />
+                      {business?.default_hourly_rate ? (
+                        <button
+                          type="button"
+                          onClick={applyRateEstimate}
+                          title={`Estimar: horas × ${business.default_hourly_rate}€/h`}
+                          className="btn-secondary px-3 shrink-0"
+                        >
+                          <Wand2 size={18} />
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Precio final (lo que se cobra al cliente) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={formData.total_amount}
+                    onChange={(e) => setFormData({ ...formData, total_amount: e.target.value })}
+                    className="input-field"
+                    required
+                  />
+                  <div className="mt-2">
+                    <MarginBadge
+                      finalPrice={parseFloat(formData.total_amount) || 0}
+                      laborCost={parseFloat(formData.labor_cost) || 0}
+                      materialsCost={parseFloat(formData.materials_cost) || 0}
                     />
+                    <span className="text-xs text-gray-500 ml-2">Margen real estimado</span>
                   </div>
                 </div>
 
@@ -318,6 +365,8 @@ export default function JobsPage() {
                     className="input-field h-16"
                   />
                 </div>
+
+                {editingId && <JobPhotosGallery jobId={editingId} />}
 
                 <div className="flex gap-2 pt-4">
                   <button type="submit" className="btn-accent flex-1">
@@ -341,6 +390,7 @@ export default function JobsPage() {
                   <th className="px-4 py-3 text-left">Título</th>
                   <th className="px-4 py-3 text-left">Cliente</th>
                   <th className="px-4 py-3 text-left">Monto</th>
+                  <th className="px-4 py-3 text-left">Margen</th>
                   <th className="px-4 py-3 text-left">Estado</th>
                   <th className="px-4 py-3 text-left">Fecha</th>
                   <th className="px-4 py-3 text-center">Acciones</th>
@@ -352,6 +402,13 @@ export default function JobsPage() {
                     <td className="px-4 py-3 font-semibold">{job.title}</td>
                     <td className="px-4 py-3 text-sm">{job.clients?.name || '-'}</td>
                     <td className="px-4 py-3 font-medium">€{job.total_amount?.toFixed(2)}</td>
+                    <td className="px-4 py-3">
+                      <MarginBadge
+                        finalPrice={job.total_amount || 0}
+                        laborCost={job.labor_cost || 0}
+                        materialsCost={job.materials_cost || 0}
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <span className={`badge ${getStatusBadge(job.status)}`}>
                         {job.status}
@@ -395,6 +452,8 @@ export default function JobsPage() {
             </div>
           )}
         </div>
+
+        <RecurringJobsPanel clients={clients} />
       </div>
     </div>
   )

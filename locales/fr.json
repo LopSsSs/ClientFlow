@@ -1,0 +1,62 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "confirm": "Confirmer"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "clients": "Clients",
+    "jobs": "Travaux",
+    "invoices": "Factures",
+    "calendar": "Calendrier",
+    "route": "Itinéraire",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "signOut": "Se déconnecter"
+  },
+  "settings": {
+    "title": "Paramètres de l'entreprise",
+    "companyName": "Nom de l'entreprise",
+    "phone": "Téléphone",
+    "whatsapp": "WhatsApp",
+    "currency": "Devise",
+    "hourlyRate": "Tarif horaire (estimateur de prix)",
+    "hourlyRateHint": "Utilisé pour suggérer le coût de main-d'œuvre lors de la création d'un travail (heures × tarif).",
+    "save": "Enregistrer les modifications",
+    "saved": "Modifications enregistrées"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "signupTitle": "Créer un compte",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "businessName": "Nom de l'entreprise",
+    "loginButton": "Se connecter",
+    "signupButton": "S'inscrire",
+    "emailNotVerified": "Vérifiez votre adresse e-mail pour débloquer toutes les fonctionnalités.",
+    "resendVerification": "Renvoyer l'e-mail de vérification"
+  },
+  "messageTemplates": {
+    "title": "Modèles de messages",
+    "hint": "Variables disponibles : {{variables}}",
+    "jobReminderLabel": "Rappel de travail",
+    "invoiceReminderLabel": "Rappel de paiement",
+    "jobReminderDefault": "Bonjour {{client_name}}, ceci est un rappel pour votre rendez-vous {{job_title}} le {{scheduled_date}} avec {{company_name}}.",
+    "invoiceReminderDefault": "Bonjour {{client_name}}, la facture {{invoice_number}} de {{amount}} avec {{company_name}} est due le {{due_date}}. Payez ici : {{payment_url}}",
+    "satisfactionSurveyLabel": "Enquête de satisfaction",
+    "satisfactionSurveyDefault": "Bonjour {{client_name}}, merci d'avoir choisi {{company_name}} pour {{job_title}}. Dites-nous comment ça s'est passé : {{survey_url}}"
+  },
+  "emailVerification": {
+    "subject": "Vérifiez votre adresse e-mail pour {{companyName}}",
+    "greeting": "Bonjour !",
+    "body": "Confirmez votre adresse e-mail pour activer votre compte sur {{companyName}}.",
+    "cta": "Vérifier mon e-mail",
+    "expiryNote": "Ce lien expire dans 24 heures.",
+    "ignoreNote": "Si vous n'êtes pas à l'origine de ce compte, vous pouvez ignorer ce message."
+  }
+}

@@ -1,11 +1,13 @@
 import { createUser, createBusiness } from '@/lib/neon'
+import { sendVerificationEmail } from '@/services/auth/emailVerification.service'
+import { isSupportedLocale, DEFAULT_LOCALE } from '@/types/i18n'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { NextResponse } from 'next/server'
 
 export async function POST(req) {
   try {
-    const { email, password, businessName } = await req.json()
+    const { email, password, businessName, locale } = await req.json()
 
     if (!email || !password || !businessName) {
       return NextResponse.json(
@@ -36,6 +38,19 @@ export async function POST(req) {
 
     // Create business
     const business = await createBusiness(user.id, { name: businessName })
+
+    // El correo de verificación es un efecto secundario: si el proveedor falla,
+    // no debe impedir que la cuenta quede creada (el usuario puede reenviarlo luego).
+    try {
+      await sendVerificationEmail({
+        userId: user.id,
+        email: user.email,
+        companyName: business.name,
+        locale: isSupportedLocale(locale) ? locale : DEFAULT_LOCALE,
+      })
+    } catch (emailError) {
+      console.error('Verification email error:', emailError)
+    }
 
     // Generate JWT token
     const token = jwt.sign(

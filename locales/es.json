@@ -1,0 +1,62 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "confirm": "Confirmar"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "clients": "Clientes",
+    "jobs": "Trabajos",
+    "invoices": "Facturas",
+    "calendar": "Calendario",
+    "route": "Ruta",
+    "reports": "Reportes",
+    "settings": "Configuración",
+    "signOut": "Salir"
+  },
+  "settings": {
+    "title": "Configuración del negocio",
+    "companyName": "Nombre del negocio",
+    "phone": "Teléfono",
+    "whatsapp": "WhatsApp",
+    "currency": "Moneda",
+    "hourlyRate": "Tarifa por hora (estimador de precios)",
+    "hourlyRateHint": "Se usa para sugerir la mano de obra al crear un trabajo (horas × tarifa).",
+    "save": "Guardar cambios",
+    "saved": "Cambios guardados"
+  },
+  "auth": {
+    "loginTitle": "Iniciar sesión",
+    "signupTitle": "Crear cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "businessName": "Nombre del negocio",
+    "loginButton": "Entrar",
+    "signupButton": "Registrarme",
+    "emailNotVerified": "Verifica tu correo electrónico para desbloquear todas las funciones.",
+    "resendVerification": "Reenviar correo de verificación"
+  },
+  "messageTemplates": {
+    "title": "Plantillas de mensajes",
+    "hint": "Variables disponibles: {{variables}}",
+    "jobReminderLabel": "Recordatorio de trabajo",
+    "invoiceReminderLabel": "Aviso de cobro",
+    "jobReminderDefault": "Hola {{client_name}}, te recordamos tu cita de {{job_title}} el {{scheduled_date}} con {{company_name}}.",
+    "invoiceReminderDefault": "Hola {{client_name}}, la factura {{invoice_number}} de {{amount}} con {{company_name}} vence el {{due_date}}. Puedes pagarla aquí: {{payment_url}}",
+    "satisfactionSurveyLabel": "Encuesta de satisfacción",
+    "satisfactionSurveyDefault": "Hola {{client_name}}, gracias por confiar en {{company_name}} para {{job_title}}. ¿Nos cuentas qué tal fue? {{survey_url}}"
+  },
+  "emailVerification": {
+    "subject": "Verifica tu correo electrónico en {{companyName}}",
+    "greeting": "¡Hola!",
+    "body": "Confirma tu correo electrónico para activar tu cuenta en {{companyName}}.",
+    "cta": "Verificar mi correo",
+    "expiryNote": "Este enlace caduca en 24 horas.",
+    "ignoreNote": "Si no creaste esta cuenta, puedes ignorar este mensaje."
+  }
+}
