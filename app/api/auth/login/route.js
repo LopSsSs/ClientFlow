@@ -1,4 +1,4 @@
-import { getUserByEmail, getBusiness } from '@/lib/neon'
+import { getUserByEmail, getBusiness, registerFailedLogin, clearFailedLogins, isUserLocked } from '@/lib/neon'
 import { getSubscription } from '@/lib/db/subscriptions'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
@@ -25,15 +25,25 @@ export async function POST(req) {
       )
     }
 
+    if (await isUserLocked(user.id)) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.' },
+        { status: 429 }
+      )
+    }
+
     // Compare password
     const isPasswordValid = await bcrypt.compare(password, user.password_hash)
 
     if (!isPasswordValid) {
+      await registerFailedLogin(user.id)
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       )
     }
+
+    await clearFailedLogins(user.id)
 
     // Get business
     const business = await getBusiness(user.id)
@@ -43,7 +53,7 @@ export async function POST(req) {
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '7d', algorithm: 'HS256' }
     )
 
     // Return with cookie

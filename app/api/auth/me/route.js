@@ -1,23 +1,18 @@
 import { getUserById, getBusiness } from '@/lib/neon'
 import { getSubscription } from '@/lib/db/subscriptions'
-import jwt from 'jsonwebtoken'
+import { verifyAuthToken } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
 export async function GET(req) {
   try {
-    const token = req.cookies.get('auth-token')?.value
-
-    if (!token) {
+    const decoded = verifyAuthToken(req)
+    if (!decoded) {
       return NextResponse.json(
         { error: 'Not authenticated' },
         { status: 401 }
       )
     }
 
-    // Verify JWT token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-    // Get user data
     const user = await getUserById(decoded.userId)
 
     if (!user) {

@@ -28,3 +28,14 @@ export async function getSubscription(userId: string): Promise<SubscriptionInfo 
   `
   return result[0]
 }
+
+// La comparación de expiración se resuelve en el propio Postgres (NOW()), nunca
+// con el reloj del servidor de la app: si los dos relojes no coinciden exactamente,
+// comparar en JS puede dejar pasar un trial que ya debería estar bloqueado.
+export async function isTrialExpired(userId: string): Promise<boolean> {
+  const result = await sql<{ expired: boolean }[]>`
+    SELECT (status = 'trialing' AND current_period_end < NOW()) AS expired
+    FROM subscriptions WHERE user_id = ${userId}
+  `
+  return result[0]?.expired ?? false
+}

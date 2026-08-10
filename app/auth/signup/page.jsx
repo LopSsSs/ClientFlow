@@ -103,7 +103,7 @@ export default function Signup() {
               />
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Mínimo 6 caracteres
+              Mínimo 8 caracteres
             </p>
           </div>
 
