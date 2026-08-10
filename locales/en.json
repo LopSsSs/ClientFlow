@@ -22,7 +22,11 @@
   "trial": {
     "banner": "{{days}} days left in your free trial",
     "bannerLastDay": "Today is the last day of your free trial",
-    "expired": "Your free trial has ended"
+    "expired": "Your free trial has ended",
+    "expiredTitle": "Your free trial has ended",
+    "expiredBody": "Your 14-day ClientFlow free trial is over. Reach out to us to keep using the app.",
+    "contactCta": "Contact us",
+    "signOut": "Sign out"
   },
   "dashboard": {
     "welcome": "Welcome, {{name}}!",

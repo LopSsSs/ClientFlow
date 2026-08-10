@@ -22,7 +22,11 @@
   "trial": {
     "banner": "Noch {{days}} Tage in Ihrer kostenlosen Testversion",
     "bannerLastDay": "Heute ist der letzte Tag Ihrer kostenlosen Testversion",
-    "expired": "Ihre kostenlose Testversion ist abgelaufen"
+    "expired": "Ihre kostenlose Testversion ist abgelaufen",
+    "expiredTitle": "Ihre kostenlose Testversion ist abgelaufen",
+    "expiredBody": "Die 14-tägige kostenlose Testversion von ClientFlow ist beendet. Kontaktiere uns, um die App weiter zu nutzen.",
+    "contactCta": "Kontakt aufnehmen",
+    "signOut": "Abmelden"
   },
   "dashboard": {
     "welcome": "Willkommen, {{name}}!",

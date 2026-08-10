@@ -22,7 +22,11 @@
   "trial": {
     "banner": "Te quedan {{days}} días de tu prueba gratuita",
     "bannerLastDay": "Hoy es tu último día de prueba gratuita",
-    "expired": "Tu prueba gratuita ha terminado"
+    "expired": "Tu prueba gratuita ha terminado",
+    "expiredTitle": "Tu prueba gratuita ha terminado",
+    "expiredBody": "Los 14 días de prueba gratuita de ClientFlow han terminado. Escríbenos para seguir usando la aplicación.",
+    "contactCta": "Contactar",
+    "signOut": "Salir"
   },
   "dashboard": {
     "welcome": "¡Bienvenido, {{name}}!",
