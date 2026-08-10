@@ -119,7 +119,10 @@ export default function Signup() {
 
         {/* Terms */}
         <p className="text-xs text-gray-500 text-center mt-6">
-          Al registrarte aceptas nuestros términos de servicio y política de privacidad
+          Al registrarte aceptas nuestros{' '}
+          <Link href="/terms" className="text-accent hover:underline">términos de servicio</Link>{' '}
+          y{' '}
+          <Link href="/privacy" className="text-accent hover:underline">política de privacidad</Link>
         </p>
 
         {/* Footer */}
