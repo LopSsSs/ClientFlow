@@ -10,7 +10,8 @@ import RecurringJobsPanel from '@/components/jobs/RecurringJobsPanel'
 import JobPhotosGallery from '@/components/jobs/JobPhotosGallery'
 import { useTranslation } from '@/hooks/useTranslation'
 import { toBCP47 } from '@/utils/i18n'
-import { Edit2, Trash2, Plus, X, Wand2 } from 'lucide-react'
+import { Edit2, Trash2, Plus, Wand2 } from 'lucide-react'
+import Modal from '@/components/Modal'
 
 export default function JobsPage() {
   const { business, loading } = useAuth()
@@ -210,17 +211,11 @@ export default function JobsPage() {
 
         {/* Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-primary">
-                  {editingId ? t('jobs.editTitle') : t('jobs.newTitle')}
-                </h2>
-                <button onClick={resetForm} className="text-gray-400 hover:text-primary">
-                  <X size={24} />
-                </button>
-              </div>
-
+          <Modal
+            title={editingId ? t('jobs.editTitle') : t('jobs.newTitle')}
+            onClose={resetForm}
+            maxWidth="max-w-2xl"
+          >
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">{t('jobs.clientLabel')}</label>
@@ -390,8 +385,7 @@ export default function JobsPage() {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
+          </Modal>
         )}
 
         {/* Table */}

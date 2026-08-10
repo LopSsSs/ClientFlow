@@ -9,7 +9,8 @@ import { getOverdueInfo } from '@/utils/collections'
 import OverdueBadge from '@/components/OverdueBadge'
 import { useTranslation } from '@/hooks/useTranslation'
 import { toBCP47 } from '@/utils/i18n'
-import { FileText, Trash2, Plus, X, Download, Edit2, CreditCard } from 'lucide-react'
+import { FileText, Trash2, Plus, Download, Edit2, CreditCard } from 'lucide-react'
+import Modal from '@/components/Modal'
 
 export default function InvoicesPage() {
   const { business, user, loading } = useAuth()
@@ -215,17 +216,10 @@ export default function InvoicesPage() {
 
         {/* Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-primary">
-                  {editingId ? t('invoices.editTitle') : t('invoices.newTitle')}
-                </h2>
-                <button onClick={resetForm} className="text-gray-400 hover:text-primary">
-                  <X size={24} />
-                </button>
-              </div>
-
+          <Modal
+            title={editingId ? t('invoices.editTitle') : t('invoices.newTitle')}
+            onClose={resetForm}
+          >
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">{t('invoices.jobLabel')}</label>
@@ -319,8 +313,7 @@ export default function InvoicesPage() {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
+          </Modal>
         )}
 
         {/* Stats */}
@@ -409,7 +402,7 @@ export default function InvoicesPage() {
                       </button>
                       {invoice.status !== 'paid' && (
                         <button
-                          onClick={() => window.open(`/pay/${invoice.id}`, '_blank')}
+                          onClick={() => window.open(`/pay/${invoice.id}`, '_blank', 'noopener,noreferrer')}
                           className="text-accent hover:text-primary"
                           title={t('invoices.payLinkTooltip')}
                         >

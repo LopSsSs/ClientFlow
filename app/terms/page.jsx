@@ -106,7 +106,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-primary mb-2">9. Limitación de responsabilidad</h2>
             <p>
-              Dado el carácter beta y gratuito del servicio, este se ofrece "tal cual", sin
+              Dado el carácter beta y gratuito del servicio, este se ofrece &quot;tal cual&quot;, sin
               garantías de ningún tipo. No se asume responsabilidad por pérdidas económicas
               derivadas del uso o la interrupción del servicio.
             </p>
