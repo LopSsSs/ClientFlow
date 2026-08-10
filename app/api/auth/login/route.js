@@ -1,4 +1,5 @@
 import { getUserByEmail, getBusiness } from '@/lib/neon'
+import { getSubscription } from '@/lib/db/subscriptions'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { NextResponse } from 'next/server'
@@ -36,6 +37,7 @@ export async function POST(req) {
 
     // Get business
     const business = await getBusiness(user.id)
+    const subscription = await getSubscription(user.id)
 
     // Generate JWT token
     const token = jwt.sign(
@@ -46,7 +48,7 @@ export async function POST(req) {
 
     // Return with cookie
     const response = NextResponse.json(
-      { user: { id: user.id, email: user.email, email_verified: user.email_verified }, business },
+      { user: { id: user.id, email: user.email, email_verified: user.email_verified }, business, subscription },
       { status: 200 }
     )
 

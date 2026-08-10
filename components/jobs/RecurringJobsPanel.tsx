@@ -8,6 +8,8 @@ import {
   deleteRecurringJob,
 } from '@/lib/api'
 import { Repeat, Trash2, Pause, Play, Plus, X } from 'lucide-react'
+import { useTranslation } from '@/hooks/useTranslation'
+import { toBCP47 } from '@/utils/i18n'
 import type { RecurringJobWithClient, RecurrenceFrequency } from '@/types/recurringJob'
 
 interface Client {
@@ -17,12 +19,6 @@ interface Client {
 
 interface RecurringJobsPanelProps {
   clients: Client[]
-}
-
-const FREQUENCY_LABELS: Record<RecurrenceFrequency, string> = {
-  weekly: 'Semanal',
-  biweekly: 'Quincenal',
-  monthly: 'Mensual',
 }
 
 const EMPTY_FORM = {
@@ -36,6 +32,12 @@ const EMPTY_FORM = {
 }
 
 export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps) {
+  const { t, locale } = useTranslation()
+  const FREQUENCY_LABELS: Record<RecurrenceFrequency, string> = {
+    weekly: t('recurringJobs.frequencyWeekly'),
+    biweekly: t('recurringJobs.frequencyBiweekly'),
+    monthly: t('recurringJobs.frequencyMonthly'),
+  }
   const [items, setItems] = useState<RecurringJobWithClient[]>([])
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
@@ -70,7 +72,7 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Eliminar este trabajo recurrente?')) return
+    if (!confirm(t('recurringJobs.deleteConfirm'))) return
     await deleteRecurringJob(id)
     load()
   }
@@ -81,11 +83,11 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
     <div className="card mt-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-primary flex items-center gap-2">
-          <Repeat size={20} /> Trabajos recurrentes
+          <Repeat size={20} /> {t('recurringJobs.title')}
         </h2>
         <button onClick={() => setShowForm(!showForm)} className="btn-secondary flex items-center gap-2 text-sm">
           {showForm ? <X size={16} /> : <Plus size={16} />}
-          {showForm ? 'Cancelar' : 'Nuevo'}
+          {showForm ? t('common.cancel') : t('recurringJobs.new')}
         </button>
       </div>
 
@@ -97,14 +99,14 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
             className="input-field"
             required
           >
-            <option value="">Cliente</option>
+            <option value="">{t('recurringJobs.clientPlaceholder')}</option>
             {clients.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
           <input
             type="text"
-            placeholder="Título"
+            placeholder={t('recurringJobs.titlePlaceholder')}
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             className="input-field"
@@ -115,9 +117,9 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
             onChange={(e) => setForm({ ...form, frequency: e.target.value as RecurrenceFrequency })}
             className="input-field"
           >
-            <option value="weekly">Semanal</option>
-            <option value="biweekly">Quincenal</option>
-            <option value="monthly">Mensual</option>
+            <option value="weekly">{t('recurringJobs.frequencyWeekly')}</option>
+            <option value="biweekly">{t('recurringJobs.frequencyBiweekly')}</option>
+            <option value="monthly">{t('recurringJobs.frequencyMonthly')}</option>
           </select>
           <input
             type="date"
@@ -129,7 +131,7 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
           <input
             type="number"
             step="0.01"
-            placeholder="Mano de obra"
+            placeholder={t('recurringJobs.laborCostPlaceholder')}
             value={form.labor_cost}
             onChange={(e) => setForm({ ...form, labor_cost: e.target.value })}
             className="input-field"
@@ -138,7 +140,7 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
           <input
             type="number"
             step="0.01"
-            placeholder="Materiales"
+            placeholder={t('recurringJobs.materialsCostPlaceholder')}
             value={form.materials_cost}
             onChange={(e) => setForm({ ...form, materials_cost: e.target.value })}
             className="input-field"
@@ -146,18 +148,18 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
           <input
             type="number"
             step="0.01"
-            placeholder="Precio final"
+            placeholder={t('recurringJobs.finalPricePlaceholder')}
             value={form.total_amount}
             onChange={(e) => setForm({ ...form, total_amount: e.target.value })}
             className="input-field"
             required
           />
-          <button type="submit" className="btn-accent">Crear</button>
+          <button type="submit" className="btn-accent">{t('recurringJobs.create')}</button>
         </form>
       )}
 
       {items.length === 0 ? (
-        <p className="text-gray-500 text-sm">No hay trabajos recurrentes configurados.</p>
+        <p className="text-gray-500 text-sm">{t('recurringJobs.empty')}</p>
       ) : (
         <div className="space-y-2">
           {items.map((item) => (
@@ -165,13 +167,13 @@ export default function RecurringJobsPanel({ clients }: RecurringJobsPanelProps)
               <div>
                 <p className="font-medium">{item.title}</p>
                 <p className="text-sm text-gray-500">
-                  {item.client_name} · {FREQUENCY_LABELS[item.frequency]} · próximo:{' '}
-                  {new Date(item.next_run_date).toLocaleDateString('es-ES')}
+                  {item.client_name} · {FREQUENCY_LABELS[item.frequency]} · {t('recurringJobs.next')}:{' '}
+                  {new Date(item.next_run_date).toLocaleDateString(toBCP47(locale))}
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <span className={`badge ${item.active ? 'badge-success' : 'badge-pending'}`}>
-                  {item.active ? 'Activo' : 'Pausado'}
+                  {item.active ? t('recurringJobs.active') : t('recurringJobs.paused')}
                 </span>
                 <button onClick={() => handleToggle(item.id, item.active)} className="text-accent hover:text-primary">
                   {item.active ? <Pause size={18} /> : <Play size={18} />}

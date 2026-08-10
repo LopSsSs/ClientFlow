@@ -36,7 +36,17 @@ export async function runJobReminders(): Promise<{ sent: number; skipped: number
     })
 
     try {
-      await messaging.send({ to: recipient.to, body, channel: recipient.channel })
+      await messaging.send({
+        to: recipient.to,
+        body,
+        channel: recipient.channel,
+        metadata: {
+          businessId: job.business_id,
+          templateType: 'job_reminder',
+          relatedType: 'job',
+          relatedId: job.id,
+        },
+      })
       await logMessage({
         businessId: job.business_id,
         channel: recipient.channel,
@@ -93,7 +103,17 @@ export async function runInvoiceReminders(): Promise<{ sent: number; skipped: nu
     })
 
     try {
-      await messaging.send({ to: recipient.to, body, channel: recipient.channel })
+      await messaging.send({
+        to: recipient.to,
+        body,
+        channel: recipient.channel,
+        metadata: {
+          businessId: invoice.business_id,
+          templateType: 'invoice_reminder',
+          relatedType: 'invoice',
+          relatedId: invoice.id,
+        },
+      })
       await logMessage({
         businessId: invoice.business_id,
         channel: recipient.channel,

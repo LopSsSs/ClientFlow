@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
 import { getTodaysRoute } from '@/lib/api'
+import { useTranslation } from '@/hooks/useTranslation'
+import { toBCP47 } from '@/utils/i18n'
 import { MapPin, ExternalLink } from 'lucide-react'
 
 const RouteMap = dynamic(() => import('@/components/route/RouteMap'), { ssr: false })
@@ -39,6 +41,7 @@ function buildGoogleMapsUrl(jobs: RouteJob[]): string | null {
 }
 
 export default function RoutePage() {
+  const { t, locale } = useTranslation()
   const [jobs, setJobs] = useState<RouteJob[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -65,18 +68,18 @@ export default function RoutePage() {
       <Navbar />
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-          <h1 className="text-4xl font-bold text-primary">Ruta de hoy</h1>
+          <h1 className="text-4xl font-bold text-primary">{t('route.title')}</h1>
           {mapsUrl && (
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="btn-accent flex items-center gap-2">
-              <ExternalLink size={18} /> Abrir ruta en Google Maps
+              <ExternalLink size={18} /> {t('route.openInMaps')}
             </a>
           )}
         </div>
 
         {loading ? (
-          <p>Cargando...</p>
+          <p>{t('common.loading')}</p>
         ) : jobs.length === 0 ? (
-          <div className="card text-center py-12 text-gray-500">No hay trabajos programados para hoy.</div>
+          <div className="card text-center py-12 text-gray-500">{t('route.empty')}</div>
         ) : (
           <>
             <div className="card mb-6 overflow-hidden p-0">
@@ -98,7 +101,7 @@ export default function RoutePage() {
                       </p>
                     </div>
                     <span className="text-sm text-gray-500">
-                      {new Date(job.scheduled_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(job.scheduled_date).toLocaleTimeString(toBCP47(locale), { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 ))}

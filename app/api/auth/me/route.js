@@ -1,4 +1,5 @@
 import { getUserById, getBusiness } from '@/lib/neon'
+import { getSubscription } from '@/lib/db/subscriptions'
 import jwt from 'jsonwebtoken'
 import { NextResponse } from 'next/server'
 
@@ -28,10 +29,12 @@ export async function GET(req) {
 
     // Get business
     const business = await getBusiness(decoded.userId)
+    const subscription = await getSubscription(decoded.userId)
 
     return NextResponse.json({
       user: { id: user.id, email: user.email, email_verified: user.email_verified },
       business,
+      subscription,
     })
   } catch (error) {
     console.error('Auth check error:', error)

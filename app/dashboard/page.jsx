@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
 import { getDashboardStats } from '@/lib/api'
+import { useTranslation } from '@/hooks/useTranslation'
 import Link from 'next/link'
 import { Users, Briefcase, FileText, TrendingUp } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 export default function Dashboard() {
   const { user, business, loading } = useAuth()
+  const { t } = useTranslation()
   const [stats, setStats] = useState(null)
   const [loadingStats, setLoadingStats] = useState(true)
 
@@ -54,7 +56,7 @@ export default function Dashboard() {
   }
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Cargando...</div>
+    return <div className="flex justify-center items-center h-screen">{t('common.loading')}</div>
   }
 
   if (!user) {
@@ -70,10 +72,10 @@ export default function Dashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-primary mb-2">
-            ¡Bienvenido, {business?.name}!
+            {t('dashboard.welcome', { name: business?.name || '' })}
           </h1>
           <p className="text-gray-600">
-            Aquí está un resumen de tu negocio
+            {t('dashboard.summary')}
           </p>
         </div>
 
@@ -86,7 +88,7 @@ export default function Dashboard() {
                 <div className="card cursor-pointer hover:shadow-lg transition">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm mb-2">Clientes</p>
+                      <p className="text-gray-600 text-sm mb-2">{t('dashboard.clients')}</p>
                       <h3 className="text-3xl font-bold text-primary">
                         {stats.clients.total}
                       </h3>
@@ -101,12 +103,12 @@ export default function Dashboard() {
                 <div className="card cursor-pointer hover:shadow-lg transition">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm mb-2">Trabajos</p>
+                      <p className="text-gray-600 text-sm mb-2">{t('dashboard.jobs')}</p>
                       <h3 className="text-3xl font-bold text-primary">
                         {stats.jobs.total}
                       </h3>
                       <p className="text-xs text-yellow-600 mt-1">
-                        {stats.jobs.pending} pendientes
+                        {stats.jobs.pending} {t('dashboard.pending')}
                       </p>
                     </div>
                     <Briefcase className="text-accent" size={40} />
@@ -119,12 +121,12 @@ export default function Dashboard() {
                 <div className="card cursor-pointer hover:shadow-lg transition">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm mb-2">Facturas</p>
+                      <p className="text-gray-600 text-sm mb-2">{t('dashboard.invoices')}</p>
                       <h3 className="text-3xl font-bold text-primary">
                         {stats.invoices.total}
                       </h3>
                       <p className="text-xs text-red-600 mt-1">
-                        {stats.invoices.pending} pendientes
+                        {stats.invoices.pending} {t('dashboard.pending')}
                       </p>
                     </div>
                     <FileText className="text-accent" size={40} />
@@ -136,7 +138,7 @@ export default function Dashboard() {
               <div className="card">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm mb-2">Ingresos (Pagado)</p>
+                    <p className="text-gray-600 text-sm mb-2">{t('dashboard.revenuePaid')}</p>
                     <h3 className="text-3xl font-bold text-green-600">
                       €{stats.invoices.revenue.toFixed(2)}
                     </h3>
@@ -149,41 +151,41 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="card">
-                <h3 className="text-xl font-bold text-primary mb-4">Acciones Rápidas</h3>
+                <h3 className="text-xl font-bold text-primary mb-4">{t('dashboard.quickActions')}</h3>
                 <div className="flex gap-2 flex-wrap">
                   <Link
                     href="/dashboard/clients"
                     className="btn-primary"
                   >
-                    Agregar Cliente
+                    {t('dashboard.addClient')}
                   </Link>
                   <Link
                     href="/dashboard/jobs"
                     className="btn-accent"
                   >
-                    Crear Trabajo
+                    {t('dashboard.createJob')}
                   </Link>
                   <Link
                     href="/dashboard/invoices"
                     className="btn-secondary"
                   >
-                    Ver Facturas
+                    {t('dashboard.viewInvoices')}
                   </Link>
                 </div>
               </div>
 
               {/* Business Info */}
               <div className="card">
-                <h3 className="text-xl font-bold text-primary mb-4">Información del Negocio</h3>
+                <h3 className="text-xl font-bold text-primary mb-4">{t('dashboard.businessInfo')}</h3>
                 <div className="space-y-2">
-                  <p><span className="font-semibold">Nombre:</span> {business?.name}</p>
-                  <p><span className="font-semibold">Teléfono:</span> {business?.phone || '-'}</p>
-                  <p><span className="font-semibold">WhatsApp:</span> {business?.whatsapp_number || '-'}</p>
+                  <p><span className="font-semibold">{t('dashboard.name')}</span> {business?.name}</p>
+                  <p><span className="font-semibold">{t('dashboard.phone')}</span> {business?.phone || '-'}</p>
+                  <p><span className="font-semibold">{t('dashboard.whatsapp')}</span> {business?.whatsapp_number || '-'}</p>
                   <Link
                     href="/dashboard/settings"
                     className="text-accent hover:underline text-sm mt-4 block"
                   >
-                    Editar información →
+                    {t('dashboard.editInfo')}
                   </Link>
                 </div>
               </div>
@@ -191,15 +193,15 @@ export default function Dashboard() {
 
             {/* Chart */}
             <div className="card">
-              <h3 className="text-xl font-bold text-primary mb-4">Resumen Mensual</h3>
+              <h3 className="text-xl font-bold text-primary mb-4">{t('dashboard.monthlySummary')}</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart
                   data={[
                     {
-                      name: 'Este mes',
-                      Clientes: stats.clients.total,
-                      Trabajos: stats.jobs.total,
-                      Facturas: stats.invoices.total,
+                      name: t('dashboard.thisMonth'),
+                      [t('dashboard.clients')]: stats.clients.total,
+                      [t('dashboard.jobs')]: stats.jobs.total,
+                      [t('dashboard.invoices')]: stats.invoices.total,
                     },
                   ]}
                 >
@@ -208,9 +210,9 @@ export default function Dashboard() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="Clientes" fill="#1a2e1a" />
-                  <Bar dataKey="Trabajos" fill="#c9a84c" />
-                  <Bar dataKey="Facturas" fill="#8b7355" />
+                  <Bar dataKey={t('dashboard.clients')} fill="#1a2e1a" />
+                  <Bar dataKey={t('dashboard.jobs')} fill="#c9a84c" />
+                  <Bar dataKey={t('dashboard.invoices')} fill="#8b7355" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -218,7 +220,7 @@ export default function Dashboard() {
         ) : (
           <div className="text-center py-12">
             <div className="spinner mx-auto"></div>
-            <p className="mt-4">Cargando datos...</p>
+            <p className="mt-4">{t('dashboard.loadingData')}</p>
           </div>
         )}
       </div>

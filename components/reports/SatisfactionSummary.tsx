@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Star } from 'lucide-react'
 import { getSurveySummary } from '@/lib/api'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface SurveySummary {
   averageRating: number
@@ -11,6 +12,7 @@ interface SurveySummary {
 }
 
 export default function SatisfactionSummary() {
+  const { t } = useTranslation()
   const [summary, setSummary] = useState<SurveySummary | null>(null)
 
   useEffect(() => {
@@ -22,11 +24,11 @@ export default function SatisfactionSummary() {
   return (
     <div className="card mt-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-primary">Satisfacción de clientes</h2>
+        <h2 className="text-lg font-bold text-primary">{t('satisfaction.title')}</h2>
         <div className="flex items-center gap-1">
           <Star size={18} className="fill-accent text-accent" />
           <span className="font-bold">{summary.averageRating.toFixed(1)}</span>
-          <span className="text-sm text-gray-500">({summary.totalResponses} respuestas)</span>
+          <span className="text-sm text-gray-500">({t('satisfaction.responses', { count: String(summary.totalResponses) })})</span>
         </div>
       </div>
       <div className="space-y-3">

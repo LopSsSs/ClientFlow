@@ -5,6 +5,8 @@ import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
 import { getMonthlyReport } from '@/lib/api'
 import { monthLabel } from '@/utils/months'
+import { useTranslation } from '@/hooks/useTranslation'
+import { toBCP47 } from '@/utils/i18n'
 import ReportExportButtons from '@/components/reports/ReportExportButtons'
 import SatisfactionSummary from '@/components/reports/SatisfactionSummary'
 import {
@@ -32,13 +34,13 @@ interface MonthlyReport {
   totals: { revenue: number; margin: number; marginPercent: number; hours: number }
 }
 
-const RANGE_OPTIONS = [
-  { label: '6 meses', value: 6 },
-  { label: '12 meses', value: 12 },
-]
-
 export default function ReportsPage() {
   const { business, loading } = useAuth()
+  const { t, locale } = useTranslation()
+  const RANGE_OPTIONS = [
+    { label: t('reports.range6'), value: 6 },
+    { label: t('reports.range12'), value: 12 },
+  ]
   const [months, setMonths] = useState(6)
   const [report, setReport] = useState<MonthlyReport | null>(null)
   const [loadingReport, setLoadingReport] = useState(true)
@@ -52,10 +54,10 @@ export default function ReportsPage() {
   }, [business, months])
 
   if (loading || loadingReport || !report) {
-    return <div className="flex justify-center items-center h-screen">Cargando...</div>
+    return <div className="flex justify-center items-center h-screen">{t('common.loading')}</div>
   }
 
-  const chartData = report.months.map((m) => ({ ...m, label: monthLabel(m.month) }))
+  const chartData = report.months.map((m) => ({ ...m, label: monthLabel(m.month, toBCP47(locale)) }))
 
   return (
     <div className="min-h-screen bg-light">
@@ -63,7 +65,7 @@ export default function ReportsPage() {
 
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-          <h1 className="text-4xl font-bold text-primary">Reportes</h1>
+          <h1 className="text-4xl font-bold text-primary">{t('reports.title')}</h1>
           <div className="flex items-center gap-3">
             <div className="flex gap-2">
               {RANGE_OPTIONS.map((opt) => (
@@ -86,24 +88,24 @@ export default function ReportsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="card">
-            <p className="text-gray-600 text-sm">Ingresos cobrados</p>
+            <p className="text-gray-600 text-sm">{t('reports.revenueCollected')}</p>
             <p className="text-3xl font-bold text-primary">€{report.totals.revenue.toFixed(2)}</p>
           </div>
           <div className="card">
-            <p className="text-gray-600 text-sm">Margen real</p>
+            <p className="text-gray-600 text-sm">{t('reports.realMargin')}</p>
             <p className="text-3xl font-bold text-green-700">
               €{report.totals.margin.toFixed(2)}{' '}
               <span className="text-lg font-medium">({report.totals.marginPercent.toFixed(0)}%)</span>
             </p>
           </div>
           <div className="card">
-            <p className="text-gray-600 text-sm">Horas trabajadas</p>
+            <p className="text-gray-600 text-sm">{t('reports.hoursWorked')}</p>
             <p className="text-3xl font-bold text-primary">{report.totals.hours.toFixed(1)} h</p>
           </div>
         </div>
 
         <div className="card mb-6">
-          <h2 className="text-lg font-bold text-primary mb-4">Ingresos y margen por mes</h2>
+          <h2 className="text-lg font-bold text-primary mb-4">{t('reports.revenueMarginChart')}</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -111,21 +113,21 @@ export default function ReportsPage() {
               <YAxis />
               <Tooltip formatter={(value: number) => `€${value.toFixed(2)}`} />
               <Legend />
-              <Bar dataKey="revenue" name="Ingresos" fill="#1a2e1a" />
-              <Bar dataKey="margin" name="Margen" fill="#c9a84c" />
+              <Bar dataKey="revenue" name={t('reports.chartRevenue')} fill="#1a2e1a" />
+              <Bar dataKey="margin" name={t('reports.chartMargin')} fill="#c9a84c" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="card">
-          <h2 className="text-lg font-bold text-primary mb-4">Horas trabajadas por mes</h2>
+          <h2 className="text-lg font-bold text-primary mb-4">{t('reports.hoursChart')}</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="label" />
               <YAxis />
               <Tooltip formatter={(value: number) => `${value.toFixed(1)} h`} />
-              <Line type="monotone" dataKey="hours" name="Horas" stroke="#1a2e1a" strokeWidth={2} />
+              <Line type="monotone" dataKey="hours" name={t('reports.chartHours')} stroke="#1a2e1a" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>

@@ -2,6 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
+import { useTranslation } from '@/hooks/useTranslation'
 import 'leaflet/dist/leaflet.css'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
@@ -32,10 +33,11 @@ interface RouteMapProps {
 }
 
 export default function RouteMap({ stops }: RouteMapProps) {
+  const { t } = useTranslation()
   if (stops.length === 0) {
     return (
       <div className="h-96 flex items-center justify-center text-gray-500 text-sm">
-        Sin paradas ubicadas en el mapa todavía.
+        {t('route.noStops')}
       </div>
     )
   }

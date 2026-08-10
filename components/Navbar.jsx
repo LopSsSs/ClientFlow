@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useBranding } from '@/hooks/useBranding'
 import { useTranslation } from '@/hooks/useTranslation'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import TrialBanner from '@/components/TrialBanner'
 import { Menu, LogOut, Home, Users, Briefcase, FileText, Settings, BarChart3, Calendar, Map } from 'lucide-react'
 import { useState } from 'react'
 
@@ -24,6 +25,7 @@ export default function Navbar() {
   if (!user) return null
 
   return (
+    <>
     <nav className="bg-primary text-light shadow-lg">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
@@ -187,5 +189,7 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+    <TrialBanner />
+    </>
   )
 }

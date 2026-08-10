@@ -135,7 +135,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-accent/20 py-8 text-center opacity-75">
-        <p>ClientFlow © 2024. Todos los derechos reservados.</p>
+        <p>ClientFlow © {new Date().getFullYear()}. Todos los derechos reservados.</p>
       </footer>
     </div>
   )

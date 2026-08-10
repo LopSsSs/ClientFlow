@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateBusiness } from '@/lib/neon'
 import { requireBusiness, errorResponse, badRequest } from '@/lib/auth'
+import { isValidPhone } from '@/utils/phone'
 import type { BusinessInput } from '@/types/business'
 
 export async function PUT(req: NextRequest) {
@@ -10,6 +11,13 @@ export async function PUT(req: NextRequest) {
 
     if (!body.name || !body.name.trim()) {
       return badRequest('El nombre del negocio es obligatorio')
+    }
+
+    if (body.phone && !isValidPhone(body.phone)) {
+      return badRequest('El teléfono no tiene un formato válido')
+    }
+    if (body.whatsapp_number && !isValidPhone(body.whatsapp_number)) {
+      return badRequest('El número de WhatsApp no tiene un formato válido')
     }
 
     let defaultHourlyRate: number | null = null

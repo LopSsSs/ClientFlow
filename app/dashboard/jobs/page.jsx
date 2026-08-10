@@ -8,10 +8,13 @@ import { estimateLaborCost } from '@/utils/estimator'
 import MarginBadge from '@/components/MarginBadge'
 import RecurringJobsPanel from '@/components/jobs/RecurringJobsPanel'
 import JobPhotosGallery from '@/components/jobs/JobPhotosGallery'
+import { useTranslation } from '@/hooks/useTranslation'
+import { toBCP47 } from '@/utils/i18n'
 import { Edit2, Trash2, Plus, X, Wand2 } from 'lucide-react'
 
 export default function JobsPage() {
   const { business, loading } = useAuth()
+  const { t, locale } = useTranslation()
   const [jobs, setJobs] = useState([])
   const [clients, setClients] = useState([])
   const [loadingJobs, setLoadingJobs] = useState(true)
@@ -78,7 +81,7 @@ export default function JobsPage() {
       resetForm()
       loadJobs()
     } catch (error) {
-      alert('Error al guardar trabajo: ' + error.message)
+      alert(t('jobs.saveError', { message: error.message }))
     }
   }
 
@@ -126,12 +129,12 @@ export default function JobsPage() {
   }
 
   const handleDelete = async (jobId) => {
-    if (confirm('¿Estás seguro que quieres eliminar este trabajo?')) {
+    if (confirm(t('jobs.deleteConfirm'))) {
       try {
         await deleteJob(jobId)
         loadJobs()
       } catch (error) {
-        alert('Error al eliminar trabajo: ' + error.message)
+        alert(t('jobs.deleteError', { message: error.message }))
       }
     }
   }
@@ -150,8 +153,18 @@ export default function JobsPage() {
     return badges[status] || 'badge-pending'
   }
 
+  const getStatusLabel = (status) => {
+    const labels = {
+      pending: t('jobs.statusPending'),
+      completed: t('jobs.statusCompleted'),
+      invoiced: t('jobs.statusInvoiced'),
+      paid: t('jobs.statusPaid'),
+    }
+    return labels[status] || status
+  }
+
   if (loading || loadingJobs) {
-    return <div className="flex justify-center items-center h-screen">Cargando...</div>
+    return <div className="flex justify-center items-center h-screen">{t('common.loading')}</div>
   }
 
   return (
@@ -161,7 +174,7 @@ export default function JobsPage() {
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-primary">Trabajos</h1>
+          <h1 className="text-4xl font-bold text-primary">{t('jobs.title')}</h1>
           <button
             onClick={() => {
               resetForm()
@@ -169,17 +182,17 @@ export default function JobsPage() {
             }}
             className="btn-accent flex items-center gap-2"
           >
-            <Plus size={20} /> Crear Trabajo
+            <Plus size={20} /> {t('jobs.createButton')}
           </button>
         </div>
 
         {/* Filters */}
         <div className="flex gap-2 mb-6">
           {[
-            { label: 'Todos', value: 'all' },
-            { label: 'Pendientes', value: 'pending' },
-            { label: 'Completados', value: 'completed' },
-            { label: 'Facturados', value: 'invoiced' },
+            { label: t('jobs.filterAll'), value: 'all' },
+            { label: t('jobs.filterPending'), value: 'pending' },
+            { label: t('jobs.filterCompleted'), value: 'completed' },
+            { label: t('jobs.filterInvoiced'), value: 'invoiced' },
           ].map((filter) => (
             <button
               key={filter.value}
@@ -201,7 +214,7 @@ export default function JobsPage() {
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-primary">
-                  {editingId ? 'Editar Trabajo' : 'Nuevo Trabajo'}
+                  {editingId ? t('jobs.editTitle') : t('jobs.newTitle')}
                 </h2>
                 <button onClick={resetForm} className="text-gray-400 hover:text-primary">
                   <X size={24} />
@@ -210,14 +223,14 @@ export default function JobsPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Cliente *</label>
+                  <label className="block text-sm font-medium mb-2">{t('jobs.clientLabel')}</label>
                   <select
                     value={formData.client_id}
                     onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
                     className="input-field"
                     required
                   >
-                    <option value="">Selecciona un cliente</option>
+                    <option value="">{t('jobs.selectClient')}</option>
                     {clients.map((client) => (
                       <option key={client.id} value={client.id}>
                         {client.name}
@@ -227,10 +240,10 @@ export default function JobsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Título *</label>
+                  <label className="block text-sm font-medium mb-2">{t('jobs.titleLabel')}</label>
                   <input
                     type="text"
-                    placeholder="Ej: Poda de plantas"
+                    placeholder={t('jobs.titlePlaceholder')}
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="input-field"
@@ -239,9 +252,9 @@ export default function JobsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Descripción</label>
+                  <label className="block text-sm font-medium mb-2">{t('jobs.descriptionLabel')}</label>
                   <textarea
-                    placeholder="Detalles del trabajo..."
+                    placeholder={t('jobs.descriptionPlaceholder')}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="input-field h-20"
@@ -250,7 +263,7 @@ export default function JobsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Fecha Programada</label>
+                    <label className="block text-sm font-medium mb-2">{t('jobs.scheduledDateLabel')}</label>
                     <input
                       type="date"
                       value={formData.scheduled_date}
@@ -259,7 +272,7 @@ export default function JobsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Fecha Completado</label>
+                    <label className="block text-sm font-medium mb-2">{t('jobs.completedDateLabel')}</label>
                     <input
                       type="date"
                       value={formData.completed_date}
@@ -271,7 +284,7 @@ export default function JobsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Horas</label>
+                    <label className="block text-sm font-medium mb-2">{t('jobs.hoursLabel')}</label>
                     <input
                       type="number"
                       step="0.5"
@@ -282,22 +295,22 @@ export default function JobsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Estado</label>
+                    <label className="block text-sm font-medium mb-2">{t('jobs.statusLabel')}</label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                       className="input-field"
                     >
-                      <option value="pending">Pendiente</option>
-                      <option value="completed">Completado</option>
-                      <option value="invoiced">Facturado</option>
+                      <option value="pending">{t('jobs.statusPending')}</option>
+                      <option value="completed">{t('jobs.statusCompleted')}</option>
+                      <option value="invoiced">{t('jobs.statusInvoiced')}</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Costo de Materiales</label>
+                    <label className="block text-sm font-medium mb-2">{t('jobs.materialsCostLabel')}</label>
                     <input
                       type="number"
                       step="0.01"
@@ -308,7 +321,7 @@ export default function JobsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Costo de Mano de Obra *</label>
+                    <label className="block text-sm font-medium mb-2">{t('jobs.laborCostLabel')}</label>
                     <div className="flex gap-2">
                       <input
                         type="number"
@@ -323,7 +336,7 @@ export default function JobsPage() {
                         <button
                           type="button"
                           onClick={applyRateEstimate}
-                          title={`Estimar: horas × ${business.default_hourly_rate}€/h`}
+                          title={t('jobs.estimateTooltip', { rate: String(business.default_hourly_rate) })}
                           className="btn-secondary px-3 shrink-0"
                         >
                           <Wand2 size={18} />
@@ -335,7 +348,7 @@ export default function JobsPage() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Precio final (lo que se cobra al cliente) *
+                    {t('jobs.finalPriceLabel')}
                   </label>
                   <input
                     type="number"
@@ -352,14 +365,14 @@ export default function JobsPage() {
                       laborCost={parseFloat(formData.labor_cost) || 0}
                       materialsCost={parseFloat(formData.materials_cost) || 0}
                     />
-                    <span className="text-xs text-gray-500 ml-2">Margen real estimado</span>
+                    <span className="text-xs text-gray-500 ml-2">{t('jobs.marginHint')}</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Notas</label>
+                  <label className="block text-sm font-medium mb-2">{t('jobs.notesLabel')}</label>
                   <textarea
-                    placeholder="Notas adicionales..."
+                    placeholder={t('jobs.notesPlaceholder')}
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     className="input-field h-16"
@@ -370,10 +383,10 @@ export default function JobsPage() {
 
                 <div className="flex gap-2 pt-4">
                   <button type="submit" className="btn-accent flex-1">
-                    {editingId ? 'Actualizar' : 'Crear'}
+                    {editingId ? t('jobs.update') : t('jobs.create')}
                   </button>
                   <button type="button" onClick={resetForm} className="btn-secondary flex-1">
-                    Cancelar
+                    {t('common.cancel')}
                   </button>
                 </div>
               </form>
@@ -387,13 +400,13 @@ export default function JobsPage() {
             <table className="w-full">
               <thead>
                 <tr className="table-header">
-                  <th className="px-4 py-3 text-left">Título</th>
-                  <th className="px-4 py-3 text-left">Cliente</th>
-                  <th className="px-4 py-3 text-left">Monto</th>
-                  <th className="px-4 py-3 text-left">Margen</th>
-                  <th className="px-4 py-3 text-left">Estado</th>
-                  <th className="px-4 py-3 text-left">Fecha</th>
-                  <th className="px-4 py-3 text-center">Acciones</th>
+                  <th className="px-4 py-3 text-left">{t('jobs.colTitle')}</th>
+                  <th className="px-4 py-3 text-left">{t('jobs.colClient')}</th>
+                  <th className="px-4 py-3 text-left">{t('jobs.colAmount')}</th>
+                  <th className="px-4 py-3 text-left">{t('jobs.colMargin')}</th>
+                  <th className="px-4 py-3 text-left">{t('jobs.colStatus')}</th>
+                  <th className="px-4 py-3 text-left">{t('jobs.colDate')}</th>
+                  <th className="px-4 py-3 text-center">{t('jobs.colActions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -411,12 +424,12 @@ export default function JobsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className={`badge ${getStatusBadge(job.status)}`}>
-                        {job.status}
+                        {getStatusLabel(job.status)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {job.scheduled_date
-                        ? new Date(job.scheduled_date).toLocaleDateString('es-ES')
+                        ? new Date(job.scheduled_date).toLocaleDateString(toBCP47(locale))
                         : '-'}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -439,7 +452,7 @@ export default function JobsPage() {
             </table>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">No hay trabajos aún</p>
+              <p className="text-gray-600 mb-4">{t('jobs.empty')}</p>
               <button
                 onClick={() => {
                   resetForm()
@@ -447,7 +460,7 @@ export default function JobsPage() {
                 }}
                 className="btn-accent"
               >
-                Crear primer trabajo
+                {t('jobs.createFirst')}
               </button>
             </div>
           )}

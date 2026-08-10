@@ -1,4 +1,4 @@
-import { getInvoices, createInvoice, updateInvoice, deleteInvoice, getClient } from '@/lib/neon'
+import { getInvoices, getInvoice, createInvoice, updateInvoice, deleteInvoice, getClient } from '@/lib/neon'
 import { requireBusiness, errorResponse, badRequest } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
@@ -58,6 +58,14 @@ export async function PUT(req) {
     const tax = parseFloat(body.tax) || 0
     if (Number.isNaN(amount) || amount < 0 || tax < 0) {
       return badRequest('Importe no válido')
+    }
+
+    const existing = await getInvoice(body.id, business.id)
+    if (!existing) {
+      return NextResponse.json({ error: 'Factura no encontrada' }, { status: 404 })
+    }
+    if (existing.status === 'paid' && (amount !== existing.amount || tax !== existing.tax)) {
+      return badRequest('No se puede modificar el importe de una factura ya cobrada')
     }
 
     const invoice = await updateInvoice(body.id, business.id, { ...body, amount, tax })

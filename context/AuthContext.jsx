@@ -10,6 +10,7 @@ const AuthContext = createContext({})
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [business, setBusiness] = useState(null)
+  const [subscription, setSubscription] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const router = useRouter()
@@ -30,9 +31,10 @@ export function AuthProvider({ children }) {
     try {
       const res = await fetch('/api/auth/me', { credentials: 'include' })
       if (res.ok) {
-        const { user, business } = await res.json()
+        const { user, business, subscription } = await res.json()
         setUser(user)
         setBusiness(business)
+        setSubscription(subscription)
       }
     } catch (err) {
       console.error('Auth check error:', err)
@@ -58,9 +60,10 @@ export function AuthProvider({ children }) {
         throw new Error(errorMsg)
       }
 
-      const { user, business } = await res.json()
+      const { user, business, subscription } = await res.json()
       setUser(user)
       setBusiness(business)
+      setSubscription(subscription)
       return { user, business }
     } catch (err) {
       setError(err.message)
@@ -87,9 +90,10 @@ export function AuthProvider({ children }) {
         throw new Error(errorMsg)
       }
 
-      const { user, business } = await res.json()
+      const { user, business, subscription } = await res.json()
       setUser(user)
       setBusiness(business)
+      setSubscription(subscription)
       return { user, business }
     } catch (err) {
       setError(err.message)
@@ -107,6 +111,7 @@ export function AuthProvider({ children }) {
       })
       setUser(null)
       setBusiness(null)
+      setSubscription(null)
       router.push('/')
     } catch (err) {
       setError(err.message)
@@ -117,6 +122,7 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     business,
+    subscription,
     loading,
     error,
     signUp,

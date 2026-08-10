@@ -23,6 +23,19 @@ export function getDictionary(locale: Locale): Dictionary {
   return DICTIONARIES[locale]
 }
 
+const BCP47_BY_LOCALE: Record<Locale, string> = {
+  es: 'es-ES',
+  en: 'en-US',
+  fr: 'fr-FR',
+  de: 'de-DE',
+}
+
+// Para pasar a Date#toLocaleDateString y similares: la tienda de locale
+// solo guarda el código corto ('es'), no la etiqueta BCP47 completa.
+export function toBCP47(locale: Locale): string {
+  return BCP47_BY_LOCALE[locale]
+}
+
 function resolve(dictionary: Dictionary, key: string): string {
   const value = key.split('.').reduce<unknown>((acc, segment) => {
     if (acc && typeof acc === 'object' && segment in acc) {

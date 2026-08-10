@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ChangeEvent } from 'react'
 import { getJobPhotos, uploadJobPhoto, deleteJobPhoto } from '@/lib/api'
+import { useTranslation } from '@/hooks/useTranslation'
 import { Trash2, Upload } from 'lucide-react'
 import type { JobPhoto, JobPhotoType } from '@/types/jobPhoto'
 
@@ -9,12 +10,12 @@ interface JobPhotosGalleryProps {
   jobId: string
 }
 
-const COLUMNS: { type: JobPhotoType; label: string }[] = [
-  { type: 'before', label: 'Antes' },
-  { type: 'after', label: 'Después' },
-]
-
 export default function JobPhotosGallery({ jobId }: JobPhotosGalleryProps) {
+  const { t } = useTranslation()
+  const COLUMNS: { type: JobPhotoType; label: string }[] = [
+    { type: 'before', label: t('jobPhotos.before') },
+    { type: 'after', label: t('jobPhotos.after') },
+  ]
   const [photos, setPhotos] = useState<JobPhoto[]>([])
   const [uploading, setUploading] = useState<JobPhotoType | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -39,7 +40,7 @@ export default function JobPhotosGallery({ jobId }: JobPhotosGalleryProps) {
       await uploadJobPhoto(jobId, file, type)
       await load()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir la foto')
+      setError(err instanceof Error ? err.message : t('jobPhotos.uploadError'))
     } finally {
       setUploading(null)
     }
@@ -52,7 +53,7 @@ export default function JobPhotosGallery({ jobId }: JobPhotosGalleryProps) {
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-2">Fotos del trabajo</label>
+      <label className="block text-sm font-medium mb-2">{t('jobPhotos.label')}</label>
       {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
       <div className="grid grid-cols-2 gap-4">
         {COLUMNS.map(({ type, label }) => (
@@ -77,7 +78,7 @@ export default function JobPhotosGallery({ jobId }: JobPhotosGalleryProps) {
             </div>
             <label className="btn-secondary text-xs flex items-center justify-center gap-1 cursor-pointer py-1.5">
               <Upload size={14} />
-              {uploading === type ? 'Subiendo...' : 'Añadir foto'}
+              {uploading === type ? t('jobPhotos.uploading') : t('jobPhotos.addPhoto')}
               <input
                 type="file"
                 accept="image/*"

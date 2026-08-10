@@ -4,18 +4,24 @@ import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Calendar, dateFnsLocalizer, type Event } from 'react-big-calendar'
 import withDragAndDrop, { type EventInteractionArgs } from 'react-big-calendar/lib/addons/dragAndDrop'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { es, enUS, fr, de } from 'date-fns/locale'
 import { getJobs, updateJob } from '@/lib/api'
+import { useTranslation } from '@/hooks/useTranslation'
+import type { Locale } from '@/types/i18n'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { locale: es }),
-  getDay,
-  locales: { es },
-})
+const DATE_FNS_LOCALES = { es, en: enUS, fr, de }
+
+function buildLocalizer(locale: Locale) {
+  return dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek: () => startOfWeek(new Date(), { locale: DATE_FNS_LOCALES[locale] }),
+    getDay,
+    locales: DATE_FNS_LOCALES,
+  })
+}
 
 interface JobEvent extends Event {
   id: string
@@ -40,6 +46,8 @@ function toEvent(job: Record<string, unknown>): JobEvent | null {
 }
 
 export default function JobsCalendar() {
+  const { t, locale } = useTranslation()
+  const localizer = useMemo(() => buildLocalizer(locale), [locale])
   const [jobs, setJobs] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -78,16 +86,16 @@ export default function JobsCalendar() {
         style={{ height: '100%' }}
         onEventDrop={handleEventDrop}
         draggableAccessor={() => true}
-        culture="es"
+        culture={locale}
         messages={{
-          today: 'Hoy',
-          previous: 'Anterior',
-          next: 'Siguiente',
-          month: 'Mes',
-          week: 'Semana',
-          day: 'Día',
-          agenda: 'Agenda',
-          noEventsInRange: 'No hay trabajos en este rango',
+          today: t('calendar.today'),
+          previous: t('calendar.previous'),
+          next: t('calendar.next'),
+          month: t('calendar.month'),
+          week: t('calendar.week'),
+          day: t('calendar.day'),
+          agenda: t('calendar.agenda'),
+          noEventsInRange: t('calendar.noEvents'),
         }}
       />
     </div>

@@ -8,8 +8,8 @@ export function lastMonthKeys(count: number, from: Date = new Date()): string[] 
   return keys
 }
 
-export function monthLabel(monthKey: string): string {
+export function monthLabel(monthKey: string, bcp47Locale = 'es-ES'): string {
   const [year, month] = monthKey.split('-').map(Number)
   const date = new Date(year!, (month ?? 1) - 1, 1)
-  return date.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
+  return date.toLocaleDateString(bcp47Locale, { month: 'short', year: '2-digit' })
 }

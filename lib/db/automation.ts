@@ -113,8 +113,37 @@ export async function logMessage(entry: {
   error?: string | null
 }): Promise<void> {
   await sql`
-    INSERT INTO message_log (business_id, channel, template_type, related_type, related_id, to_number, status, error, created_at)
+    INSERT INTO message_log (business_id, channel, template_type, related_type, related_id, to_number, status, error, direction, created_at)
     VALUES (${entry.businessId}, ${entry.channel}, ${entry.templateType}, ${entry.relatedType}, ${entry.relatedId},
-            ${entry.toNumber}, ${entry.status}, ${entry.error ?? null}, NOW())
+            ${entry.toNumber}, ${entry.status}, ${entry.error ?? null}, 'outbound', NOW())
+  `
+}
+
+// Eventos que llegan desde el escenario "Watch Events" de Make.com: respuestas del
+// cliente y cambios de estado de entrega. No siempre hay job/invoice asociado
+// (p.ej. un cliente que responde "gracias" sin más contexto).
+export async function logInboundWhatsappEvent(entry: {
+  businessId: string
+  toNumber: string
+  status: string
+  body?: string | null
+  providerMessageId?: string | null
+}): Promise<void> {
+  await sql`
+    INSERT INTO message_log (business_id, channel, template_type, to_number, status, direction, body, provider_message_id, created_at)
+    VALUES (${entry.businessId}, 'whatsapp', 'inbound_event', ${entry.toNumber}, ${entry.status},
+            'inbound', ${entry.body ?? null}, ${entry.providerMessageId ?? null}, NOW())
+  `
+}
+
+// Correlaciona un evento de estado de entrega (sent/delivered/read/failed) de Meta
+// con el mensaje saliente original, cuando Make.com nos devuelve el wamid.
+export async function updateOutboundMessageStatus(
+  providerMessageId: string,
+  status: string
+): Promise<void> {
+  await sql`
+    UPDATE message_log SET status = ${status}
+    WHERE provider_message_id = ${providerMessageId} AND direction = 'outbound'
   `
 }

@@ -1,4 +1,5 @@
 import { getOverdueInfo } from '@/utils/collections'
+import { useTranslation } from '@/hooks/useTranslation'
 import type { InvoiceStatus } from '@/types/invoice'
 
 interface OverdueBadgeProps {
@@ -13,13 +14,14 @@ const BUCKET_CLASS: Record<string, string> = {
 }
 
 export default function OverdueBadge({ dueDate, status }: OverdueBadgeProps) {
+  const { t } = useTranslation()
   const { isOverdue, daysOverdue, bucket } = getOverdueInfo(dueDate, status)
 
   if (!isOverdue || bucket === 'none') return null
 
   return (
     <span className={`badge ${BUCKET_CLASS[bucket]} ml-2`}>
-      Vencida {daysOverdue}d
+      {t('overdueBadge.label', { days: String(daysOverdue) })}
     </span>
   )
 }

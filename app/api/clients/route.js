@@ -1,6 +1,17 @@
 import { getClients, createClient, updateClient, deleteClient } from '@/lib/neon'
 import { requireBusiness, errorResponse, badRequest } from '@/lib/auth'
+import { isValidPhone } from '@/utils/phone'
 import { NextResponse } from 'next/server'
+
+function validatePhoneFields(body) {
+  if (body.phone && !isValidPhone(body.phone)) {
+    return 'El teléfono no tiene un formato válido'
+  }
+  if (body.whatsapp_number && !isValidPhone(body.whatsapp_number)) {
+    return 'El número de WhatsApp no tiene un formato válido'
+  }
+  return null
+}
 
 export async function GET(req) {
   try {
@@ -21,6 +32,11 @@ export async function POST(req) {
       return badRequest('El nombre del cliente es obligatorio')
     }
 
+    const phoneError = validatePhoneFields(body)
+    if (phoneError) {
+      return badRequest(phoneError)
+    }
+
     const client = await createClient(business.id, body)
     return NextResponse.json(client, { status: 201 })
   } catch (error) {
@@ -38,6 +54,11 @@ export async function PUT(req) {
     }
     if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
       return badRequest('El nombre del cliente es obligatorio')
+    }
+
+    const phoneError = validatePhoneFields(body)
+    if (phoneError) {
+      return badRequest(phoneError)
     }
 
     const client = await updateClient(body.id, business.id, body)

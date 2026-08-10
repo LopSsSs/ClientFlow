@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Business } from '@/types/business'
+import type { SubscriptionInfo } from '@/lib/db/subscriptions'
 
 // AuthContext.jsx sigue sin migrar a TypeScript (ver decisión de Fase 1: allowJs
 // para no tocar lo que ya funciona). Este .d.ts tipa su superficie pública para
@@ -13,6 +14,7 @@ export interface AuthUser {
 export interface AuthContextValue {
   user: AuthUser | null
   business: Business | null
+  subscription: SubscriptionInfo | null
   loading: boolean
   error: string | null
   signUp: (

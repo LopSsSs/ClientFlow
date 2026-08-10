@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
 import { updateBusiness } from '@/lib/api'
+import { isValidPhone } from '@/utils/phone'
 import { useTranslation } from '@/hooks/useTranslation'
 import MessageTemplatesForm from '@/components/settings/MessageTemplatesForm'
 
@@ -44,8 +45,18 @@ export default function SettingsPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    setSaving(true)
     setError(null)
+
+    if (form.phone && !isValidPhone(form.phone)) {
+      setError('El teléfono no tiene un formato válido')
+      return
+    }
+    if (form.whatsapp_number && !isValidPhone(form.whatsapp_number)) {
+      setError('El número de WhatsApp no tiene un formato válido')
+      return
+    }
+
+    setSaving(true)
     try {
       const updated = await updateBusiness({
         name: form.name,
@@ -64,7 +75,7 @@ export default function SettingsPage() {
   }
 
   if (loading || !business) {
-    return <div className="flex justify-center items-center h-screen">Cargando...</div>
+    return <div className="flex justify-center items-center h-screen">{t('common.loading')}</div>
   }
 
   return (

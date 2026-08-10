@@ -1,4 +1,5 @@
 import { createUser, createBusiness } from '@/lib/neon'
+import { startTrial, getSubscription } from '@/lib/db/subscriptions'
 import { sendVerificationEmail } from '@/services/auth/emailVerification.service'
 import { isSupportedLocale, DEFAULT_LOCALE } from '@/types/i18n'
 import bcrypt from 'bcryptjs'
@@ -39,6 +40,9 @@ export async function POST(req) {
     // Create business
     const business = await createBusiness(user.id, { name: businessName })
 
+    await startTrial(user.id)
+    const subscription = await getSubscription(user.id)
+
     // El correo de verificación es un efecto secundario: si el proveedor falla,
     // no debe impedir que la cuenta quede creada (el usuario puede reenviarlo luego).
     try {
@@ -61,7 +65,7 @@ export async function POST(req) {
 
     // Return with cookie
     const response = NextResponse.json(
-      { user, business },
+      { user, business, subscription },
       { status: 201 }
     )
 
