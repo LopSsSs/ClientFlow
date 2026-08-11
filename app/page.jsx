@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { redirect } from 'next/navigation'
 import { CheckCircle, Users, Briefcase, FileText } from 'lucide-react'
+import { PLANS } from '@/lib/plans'
 
 export default function Home() {
   const { user, loading } = useAuth()
@@ -76,26 +77,9 @@ export default function Home() {
         <h2 className="text-4xl font-bold text-center mb-16">Planes</h2>
         
         <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              name: 'Starter',
-              price: '19,99€',
-              features: ['50 clientes', 'Ilimitados trabajos', 'Facturas básicas', 'Email support'],
-            },
-            {
-              name: 'Professional',
-              price: '49,99€',
-              features: ['200 clientes', 'Ilimitados trabajos', 'Reportes avanzados', 'Prioridad 24/7'],
-              highlight: true,
-            },
-            {
-              name: 'Enterprise',
-              price: '99,99€',
-              features: ['Ilimitados clientes', 'Integraciones custom', 'Dedicado', 'SLA garantizado'],
-            },
-          ].map((plan, idx) => (
+          {Object.values(PLANS).map((plan) => (
             <div
-              key={idx}
+              key={plan.id}
               className={`rounded-lg p-8 ${
                 plan.highlight
                   ? 'bg-accent text-primary ring-4 ring-accent ring-offset-2'
@@ -103,9 +87,10 @@ export default function Home() {
               }`}
             >
               <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-              <p className={`text-4xl font-bold mb-6 ${plan.highlight ? '' : 'text-accent'}`}>
-                {plan.price}
+              <p className={`text-4xl font-bold mb-1 ${plan.highlight ? '' : 'text-accent'}`}>
+                {plan.priceLabel}
               </p>
+              <p className={`text-sm mb-6 ${plan.highlight ? 'opacity-70' : 'opacity-60'}`}>al mes</p>
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature, fidx) => (
                   <li key={fidx} className="flex items-center gap-2">
@@ -114,9 +99,15 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <button className={plan.highlight ? 'btn-primary w-full' : 'btn-accent w-full'}>
+              {/* El plan elegido viaja como query param: la landing solo se ve
+                  sin sesión (arriba se redirige a /dashboard si hay user), así
+                  que el único flujo posible desde aquí es registrarse primero. */}
+              <Link
+                href={`/auth/signup?plan=${plan.id}`}
+                className={`block text-center ${plan.highlight ? 'btn-primary w-full' : 'btn-accent w-full'}`}
+              >
                 Elegir Plan
-              </button>
+              </Link>
             </div>
           ))}
         </div>

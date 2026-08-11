@@ -1,5 +1,6 @@
 import { getClients, createClient, updateClient, deleteClient } from '@/lib/neon'
 import { requireBusiness, errorResponse, badRequest } from '@/lib/auth'
+import { getSubscription } from '@/lib/db/subscriptions'
 import { isValidPhone } from '@/utils/phone'
 import { NextResponse } from 'next/server'
 
@@ -25,7 +26,7 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const { business } = await requireBusiness(req)
+    const { userId, business } = await requireBusiness(req)
     const body = await req.json()
 
     if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
@@ -35,6 +36,21 @@ export async function POST(req) {
     const phoneError = validatePhoneFields(body)
     if (phoneError) {
       return badRequest(phoneError)
+    }
+
+    // max_clients null = plan sin límite (Enterprise); en cualquier otro caso
+    // se bloquea la creación al llegar al tope del plan actual.
+    const subscription = await getSubscription(userId)
+    if (subscription?.max_clients != null) {
+      const currentClients = await getClients(business.id)
+      if (currentClients.length >= subscription.max_clients) {
+        return NextResponse.json(
+          {
+            error: `Has alcanzado el límite de ${subscription.max_clients} clientes de tu plan actual. Mejora tu plan para añadir más.`,
+          },
+          { status: 402 }
+        )
+      }
     }
 
     const client = await createClient(business.id, body)

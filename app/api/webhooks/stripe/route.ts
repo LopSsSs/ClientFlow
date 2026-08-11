@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { getStripeClient, isStripeConfigured } from '@/services/payments/stripe'
 import { markInvoicePaidByCheckoutSession } from '@/lib/db/payments'
+import { activateSubscriptionPlan, markSubscriptionCanceled } from '@/lib/db/subscriptions'
+import { getPlan } from '@/lib/plans'
 
 export async function POST(req: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -25,13 +27,46 @@ export async function POST(req: NextRequest) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
-    if (session.payment_status === 'paid') {
+    // mode='payment' es el pago suelto de una factura; mode='subscription' es
+    // la contratación de un plan, que se sincroniza aparte vía los eventos
+    // customer.subscription.* (esos sí incluyen las fechas del periodo).
+    if (session.mode === 'payment' && session.payment_status === 'paid') {
       const paymentIntentId =
         typeof session.payment_intent === 'string'
           ? session.payment_intent
           : session.payment_intent?.id ?? null
       await markInvoicePaidByCheckoutSession(session.id, paymentIntentId)
     }
+  }
+
+  if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
+    const subscription = event.data.object as Stripe.Subscription
+    const userId = subscription.metadata.userId
+    const planId = subscription.metadata.planId
+    const plan = planId ? getPlan(planId) : undefined
+    const item = subscription.items.data[0]
+
+    if (userId && plan && item && (subscription.status === 'active' || subscription.status === 'trialing')) {
+      await activateSubscriptionPlan({
+        userId,
+        plan: plan.id,
+        stripeSubscriptionId: subscription.id,
+        currentPeriodStart: new Date(item.current_period_start * 1000).toISOString(),
+        currentPeriodEnd: new Date(item.current_period_end * 1000).toISOString(),
+        maxClients: plan.maxClients,
+      })
+    } else if (
+      subscription.status === 'canceled' ||
+      subscription.status === 'unpaid' ||
+      subscription.status === 'incomplete_expired'
+    ) {
+      await markSubscriptionCanceled(subscription.id)
+    }
+  }
+
+  if (event.type === 'customer.subscription.deleted') {
+    const subscription = event.data.object as Stripe.Subscription
+    await markSubscriptionCanceled(subscription.id)
   }
 
   return NextResponse.json({ received: true })

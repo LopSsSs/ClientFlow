@@ -1,13 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, Lock, Building2 } from 'lucide-react'
 import { useNotification } from '@/store/notificationStore'
+import { getPlan } from '@/lib/plans'
 
 export default function Signup() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
+  )
+}
+
+function SignupForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [businessName, setBusinessName] = useState('')
@@ -15,7 +24,10 @@ export default function Signup() {
   const [error, setError] = useState('')
   const { signUp } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { notifyEmail, notifySuccess, notifyError } = useNotification()
+
+  const selectedPlan = getPlan(searchParams.get('plan'))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -30,6 +42,23 @@ export default function Signup() {
         notifyError('Cuenta creada, pero no pudimos enviar el email de verificación. Podrás reenviarlo desde Ajustes.')
       }
       notifySuccess('Cuenta creada correctamente')
+
+      if (selectedPlan) {
+        try {
+          const res = await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ planId: selectedPlan.id }),
+          })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error || 'No se pudo iniciar el pago')
+          window.location.href = data.url
+          return
+        } catch (subscribeError) {
+          notifyError('Cuenta creada, pero no se pudo iniciar el pago del plan. Puedes elegirlo de nuevo desde el dashboard.')
+        }
+      }
+
       router.push('/dashboard')
     } catch (err) {
       setError(err.message)
@@ -48,6 +77,11 @@ export default function Signup() {
           </div>
           <h1 className="text-3xl font-bold text-primary mb-2">ClientFlow</h1>
           <p className="text-gray-600">Crea tu cuenta ahora</p>
+          {selectedPlan && (
+            <p className="text-sm text-accent font-medium mt-2">
+              Plan {selectedPlan.name} — {selectedPlan.priceLabel}/mes
+            </p>
+          )}
         </div>
 
         {/* Form */}

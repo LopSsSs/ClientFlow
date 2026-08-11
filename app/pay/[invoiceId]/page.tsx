@@ -102,7 +102,7 @@ export default function PayInvoicePage() {
               <p className="text-sm text-orange-600 mb-3">Pago cancelado. Puedes intentarlo de nuevo.</p>
             )}
             <button onClick={handlePay} disabled={paying} className="btn-accent w-full">
-              {paying ? 'Redirigiendo...' : 'Pagar ahora'}
+              {paying ? 'Redirigiendo...' : 'Pincha aquí para pagar'}
             </button>
             {payError && <p className="text-red-600 text-sm mt-3 text-center">{payError}</p>}
           </>

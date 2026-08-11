@@ -39,3 +39,53 @@ export async function isTrialExpired(userId: string): Promise<boolean> {
   `
   return result[0]?.expired ?? false
 }
+
+export async function setBusinessStripeCustomerId(
+  businessId: string,
+  stripeCustomerId: string
+): Promise<void> {
+  await sql`
+    UPDATE businesses SET stripe_customer_id = ${stripeCustomerId}, updated_at = NOW()
+    WHERE id = ${businessId}
+  `
+}
+
+export async function getUserIdByStripeCustomerId(
+  stripeCustomerId: string
+): Promise<string | undefined> {
+  const result = await sql<{ user_id: string }[]>`
+    SELECT user_id FROM businesses WHERE stripe_customer_id = ${stripeCustomerId}
+  `
+  return result[0]?.user_id
+}
+
+// Se llama desde el webhook de Stripe cuando una suscripción de pago se activa.
+// Sustituye el estado de trial por el plan real; current_period_end pasa a marcar
+// la próxima renovación (Stripe re-factura y el webhook la vuelve a actualizar).
+export async function activateSubscriptionPlan(params: {
+  userId: string
+  plan: string
+  stripeSubscriptionId: string
+  currentPeriodStart: string
+  currentPeriodEnd: string
+  maxClients: number | null
+}): Promise<void> {
+  await sql`
+    UPDATE subscriptions
+    SET plan = ${params.plan},
+        status = 'active',
+        stripe_subscription_id = ${params.stripeSubscriptionId},
+        current_period_start = ${params.currentPeriodStart},
+        current_period_end = ${params.currentPeriodEnd},
+        max_clients = ${params.maxClients},
+        updated_at = NOW()
+    WHERE user_id = ${params.userId}
+  `
+}
+
+export async function markSubscriptionCanceled(stripeSubscriptionId: string): Promise<void> {
+  await sql`
+    UPDATE subscriptions SET status = 'canceled', updated_at = NOW()
+    WHERE stripe_subscription_id = ${stripeSubscriptionId}
+  `
+}
