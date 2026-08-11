@@ -133,6 +133,7 @@
     "colActions": "Aktionen",
     "editTooltip": "Bearbeiten",
     "downloadTooltip": "PDF herunterladen",
+    "emailTooltip": "Per E-Mail senden",
     "payLinkTooltip": "Zahlungslink öffnen",
     "empty": "Noch keine Rechnungen",
     "createFirst": "Erste Rechnung erstellen",
@@ -297,5 +298,12 @@
     "cta": "E-Mail bestätigen",
     "expiryNote": "Dieser Link läuft in 24 Stunden ab.",
     "ignoreNote": "Wenn du dieses Konto nicht erstellt hast, kannst du diese Nachricht ignorieren."
+  },
+  "invoiceEmail": {
+    "subject": "Rechnung {{invoiceNumber}} von {{companyName}}",
+    "greeting": "Hallo {{clientName}},",
+    "body": "Im Anhang findest du deine Rechnung {{invoiceNumber}} von {{companyName}} über {{amount}}.",
+    "payCta": "Online bezahlen",
+    "attachmentNote": "Alle Details findest du im angehängten PDF."
   }
 }

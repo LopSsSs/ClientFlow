@@ -3,21 +3,24 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
-import { getInvoices, getJobs, createInvoice, updateInvoice, deleteInvoice } from '@/lib/api'
+import { getInvoices, getJobs, createInvoice, updateInvoice, deleteInvoice, sendInvoiceEmail } from '@/lib/api'
 import { generateInvoicePDF, downloadInvoice } from '@/lib/invoiceGenerator'
 import { getOverdueInfo } from '@/utils/collections'
 import OverdueBadge from '@/components/OverdueBadge'
 import { useTranslation } from '@/hooks/useTranslation'
+import { useNotification } from '@/store/notificationStore'
 import { toBCP47 } from '@/utils/i18n'
-import { FileText, Trash2, Plus, Download, Edit2, CreditCard } from 'lucide-react'
+import { FileText, Trash2, Plus, Download, Edit2, CreditCard, Mail } from 'lucide-react'
 import Modal from '@/components/Modal'
 
 export default function InvoicesPage() {
   const { business, user, loading } = useAuth()
   const { t, locale } = useTranslation()
+  const { notifyEmail, notifyError } = useNotification()
   const [invoices, setInvoices] = useState([])
   const [jobs, setJobs] = useState([])
   const [loadingInvoices, setLoadingInvoices] = useState(true)
+  const [sendingEmailId, setSendingEmailId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [editingOriginalStatus, setEditingOriginalStatus] = useState(null)
@@ -136,6 +139,23 @@ export default function InvoicesPage() {
 
     const doc = generateInvoicePDF(invoiceData, business)
     downloadInvoice(doc, invoice.invoice_number)
+  }
+
+  const handleSendEmail = async (invoice) => {
+    if (!invoice.clients?.email) {
+      notifyError('Este cliente no tiene email registrado')
+      return
+    }
+    setSendingEmailId(invoice.id)
+    try {
+      await sendInvoiceEmail(invoice.id)
+      notifyEmail(invoice.clients.email, invoice.invoice_number)
+      loadInvoices()
+    } catch (error) {
+      notifyError(`No se pudo enviar el email: ${error.message}`)
+    } finally {
+      setSendingEmailId(null)
+    }
   }
 
   const filteredInvoices = statusFilter === 'all'
@@ -399,6 +419,14 @@ export default function InvoicesPage() {
                         title={t('invoices.downloadTooltip')}
                       >
                         <Download size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleSendEmail(invoice)}
+                        disabled={sendingEmailId !== null}
+                        className="text-accent hover:text-primary disabled:opacity-40"
+                        title={t('invoices.emailTooltip')}
+                      >
+                        <Mail size={18} />
                       </button>
                       {invoice.status !== 'paid' && (
                         <button

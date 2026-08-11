@@ -5,7 +5,8 @@ import type { EmailMessage, EmailService } from './EmailService'
 export class ConsoleEmailService implements EmailService {
   async send(message: EmailMessage): Promise<void> {
     console.warn(
-      `[email] RESEND_API_KEY no configurada. Simulando envío a ${message.to}: "${message.subject}"`
+      `[email] RESEND_API_KEY no configurada. Simulando envío a ${message.to}: "${message.subject}"` +
+        (message.attachments?.length ? ` (adjuntos: ${message.attachments.map((a) => a.filename).join(', ')})` : '')
     )
     console.info(message.html)
   }

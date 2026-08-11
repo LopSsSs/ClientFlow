@@ -133,6 +133,7 @@
     "colActions": "Actions",
     "editTooltip": "Edit",
     "downloadTooltip": "Download PDF",
+    "emailTooltip": "Send by email",
     "payLinkTooltip": "Open payment link",
     "empty": "No invoices yet",
     "createFirst": "Create first invoice",
@@ -297,5 +298,12 @@
     "cta": "Verify my email",
     "expiryNote": "This link expires in 24 hours.",
     "ignoreNote": "If you didn't create this account, you can safely ignore this message."
+  },
+  "invoiceEmail": {
+    "subject": "Invoice {{invoiceNumber}} from {{companyName}}",
+    "greeting": "Hi {{clientName}},",
+    "body": "Attached is your invoice {{invoiceNumber}} from {{companyName}} for {{amount}}.",
+    "payCta": "Pay online",
+    "attachmentNote": "You'll find the full details in the attached PDF."
   }
 }

@@ -133,6 +133,7 @@
     "colActions": "Acciones",
     "editTooltip": "Editar",
     "downloadTooltip": "Descargar PDF",
+    "emailTooltip": "Enviar por email",
     "payLinkTooltip": "Abrir enlace de pago",
     "empty": "No hay facturas aún",
     "createFirst": "Crear primera factura",
@@ -297,5 +298,12 @@
     "cta": "Verificar mi correo",
     "expiryNote": "Este enlace caduca en 24 horas.",
     "ignoreNote": "Si no creaste esta cuenta, puedes ignorar este mensaje."
+  },
+  "invoiceEmail": {
+    "subject": "Factura {{invoiceNumber}} de {{companyName}}",
+    "greeting": "Hola {{clientName}},",
+    "body": "Adjuntamos tu factura {{invoiceNumber}} de {{companyName}} por un importe de {{amount}}.",
+    "payCta": "Pagar online",
+    "attachmentNote": "Encontrarás el detalle completo en el PDF adjunto."
   }
 }
