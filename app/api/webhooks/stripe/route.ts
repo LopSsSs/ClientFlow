@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { getStripeClient, isStripeConfigured } from '@/services/payments/stripe'
 import { markInvoicePaidByCheckoutSession } from '@/lib/db/payments'
-import { activateSubscriptionPlan, markSubscriptionCanceled } from '@/lib/db/subscriptions'
+import { activateSubscriptionPlan, markSubscriptionCanceled, setBusinessStripeCustomerId } from '@/lib/db/subscriptions'
+import { getBusiness } from '@/lib/neon'
 import { getPlan } from '@/lib/plans'
 
 export async function POST(req: NextRequest) {
@@ -55,6 +56,16 @@ export async function POST(req: NextRequest) {
         currentPeriodEnd: new Date(item.current_period_end * 1000).toISOString(),
         maxClients: plan.maxClients,
       })
+
+      // Guardamos el Customer creado por Checkout para reutilizarlo la próxima
+      // vez que este negocio cambie de plan (evita duplicar Customers en Stripe).
+      const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id
+      if (customerId) {
+        const business = await getBusiness(userId)
+        if (business && business.stripe_customer_id !== customerId) {
+          await setBusinessStripeCustomerId(business.id, customerId)
+        }
+      }
     } else if (
       subscription.status === 'canceled' ||
       subscription.status === 'unpaid' ||

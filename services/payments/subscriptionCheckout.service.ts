@@ -1,6 +1,5 @@
 import { getStripeClient, isStripeConfigured } from './stripe'
 import { getPlan } from '@/lib/plans'
-import { setBusinessStripeCustomerId } from '@/lib/db/subscriptions'
 
 export type SubscriptionCheckoutResult =
   | { ok: true; url: string }
@@ -29,21 +28,15 @@ export async function createCheckoutSessionForPlan(params: {
   const stripe = getStripeClient()
   const appUrl = getAppUrl()
 
-  // Reutilizamos el Customer si el negocio ya tiene uno (de un plan anterior);
-  // si no, se crea aquí y se guarda para la próxima vez.
-  let customerId = params.existingStripeCustomerId
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: params.businessEmail,
-      metadata: { businessId: params.businessId, userId: params.userId },
-    })
-    customerId = customer.id
-    await setBusinessStripeCustomerId(params.businessId, customerId)
-  }
-
+  // La clave restringida de Stripe solo tiene permiso de "Checkout Sessions"
+  // (mínimo privilegio), no de "Customers" — así que no llamamos a
+  // stripe.customers.create() aparte. En modo subscription, Checkout crea el
+  // Customer él solo a partir de customer_email si no le pasamos uno ya existente.
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
-    customer: customerId,
+    ...(params.existingStripeCustomerId
+      ? { customer: params.existingStripeCustomerId }
+      : { customer_email: params.businessEmail }),
     line_items: [{ price: plan.stripePriceId, quantity: 1 }],
     success_url: `${appUrl}/dashboard?subscribed=success`,
     cancel_url: `${appUrl}/dashboard?subscribed=cancelled`,
