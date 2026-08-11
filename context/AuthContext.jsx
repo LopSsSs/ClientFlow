@@ -60,11 +60,11 @@ export function AuthProvider({ children }) {
         throw new Error(errorMsg)
       }
 
-      const { user, business, subscription } = await res.json()
+      const { user, business, subscription, emailSent } = await res.json()
       setUser(user)
       setBusiness(business)
       setSubscription(subscription)
-      return { user, business }
+      return { user, business, emailSent }
     } catch (err) {
       setError(err.message)
       throw err

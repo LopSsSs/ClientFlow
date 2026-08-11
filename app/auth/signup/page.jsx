@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, Lock, Building2 } from 'lucide-react'
+import { useNotification } from '@/store/notificationStore'
 
 export default function Signup() {
   const [email, setEmail] = useState('')
@@ -14,6 +15,7 @@ export default function Signup() {
   const [error, setError] = useState('')
   const { signUp } = useAuth()
   const router = useRouter()
+  const { notifyEmail, notifySuccess, notifyError } = useNotification()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -21,7 +23,13 @@ export default function Signup() {
     setLoading(true)
 
     try {
-      await signUp(email, password, businessName)
+      const { emailSent } = await signUp(email, password, businessName)
+      if (emailSent) {
+        notifyEmail(email)
+      } else {
+        notifyError('Cuenta creada, pero no pudimos enviar el email de verificación. Podrás reenviarlo desde Ajustes.')
+      }
+      notifySuccess('Cuenta creada correctamente')
       router.push('/dashboard')
     } catch (err) {
       setError(err.message)

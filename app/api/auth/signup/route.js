@@ -45,6 +45,8 @@ export async function POST(req) {
 
     // El correo de verificación es un efecto secundario: si el proveedor falla,
     // no debe impedir que la cuenta quede creada (el usuario puede reenviarlo luego).
+    // `emailSent` viaja en la respuesta para que el frontend no informe un envío que no ocurrió.
+    let emailSent = true
     try {
       await sendVerificationEmail({
         userId: user.id,
@@ -53,6 +55,7 @@ export async function POST(req) {
         locale: isSupportedLocale(locale) ? locale : DEFAULT_LOCALE,
       })
     } catch (emailError) {
+      emailSent = false
       console.error('Verification email error:', emailError)
     }
 
@@ -65,7 +68,7 @@ export async function POST(req) {
 
     // Return with cookie
     const response = NextResponse.json(
-      { user, business, subscription },
+      { user, business, subscription, emailSent },
       { status: 201 }
     )
 

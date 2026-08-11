@@ -1,5 +1,6 @@
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
+import { LayoutWrapper } from './LayoutWrapper'
 
 export const metadata = {
   title: 'ClientFlow - CRM para Servicios',
@@ -11,7 +12,7 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body className="bg-light">
         <AuthProvider>
-          {children}
+          <LayoutWrapper>{children}</LayoutWrapper>
         </AuthProvider>
       </body>
     </html>
