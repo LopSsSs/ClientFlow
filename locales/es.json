@@ -16,6 +16,7 @@
     "calendar": "Calendario",
     "route": "Ruta",
     "reports": "Reportes",
+    "plan": "Plan",
     "settings": "Configuración",
     "signOut": "Salir"
   },
@@ -27,6 +28,15 @@
     "expiredBody": "Los 14 días de prueba gratuita de ClientFlow han terminado. Escríbenos para seguir usando la aplicación.",
     "contactCta": "Contactar",
     "signOut": "Salir"
+  },
+  "plan": {
+    "title": "Tu plan",
+    "currentPlanSubtitle": "Estás en el plan {{plan}}",
+    "trialSubtitle": "Estás en periodo de prueba gratuita",
+    "perMonth": "al mes",
+    "choosePlan": "Elegir Plan",
+    "currentPlanBadge": "Plan actual",
+    "redirecting": "Redirigiendo..."
   },
   "dashboard": {
     "welcome": "¡Bienvenido, {{name}}!",

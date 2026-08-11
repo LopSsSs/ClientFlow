@@ -7,7 +7,7 @@ import { useBranding } from '@/hooks/useBranding'
 import { useTranslation } from '@/hooks/useTranslation'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import TrialBanner from '@/components/TrialBanner'
-import { Menu, LogOut, Home, Users, Briefcase, FileText, Settings, BarChart3, Calendar, Map } from 'lucide-react'
+import { Menu, LogOut, Home, Users, Briefcase, FileText, Settings, BarChart3, Calendar, Map, CreditCard } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Navbar() {
@@ -89,6 +89,13 @@ export default function Navbar() {
               <span>{t('nav.reports')}</span>
             </Link>
             <Link
+              href="/dashboard/plan"
+              className="flex items-center gap-2 hover:text-accent transition"
+            >
+              <CreditCard size={18} />
+              <span>{t('nav.plan')}</span>
+            </Link>
+            <Link
               href="/dashboard/settings"
               className="flex items-center gap-2 hover:text-accent transition"
             >
@@ -168,6 +175,12 @@ export default function Navbar() {
               className="block py-2 px-4 hover:bg-primary rounded hover:text-accent transition"
             >
               {t('nav.reports')}
+            </Link>
+            <Link
+              href="/dashboard/plan"
+              className="block py-2 px-4 hover:bg-primary rounded hover:text-accent transition"
+            >
+              {t('nav.plan')}
             </Link>
             <Link
               href="/dashboard/settings"

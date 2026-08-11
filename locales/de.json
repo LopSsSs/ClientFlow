@@ -16,6 +16,7 @@
     "calendar": "Kalender",
     "route": "Route",
     "reports": "Berichte",
+    "plan": "Tarif",
     "settings": "Einstellungen",
     "signOut": "Abmelden"
   },
@@ -27,6 +28,15 @@
     "expiredBody": "Die 14-tägige kostenlose Testversion von ClientFlow ist beendet. Kontaktiere uns, um die App weiter zu nutzen.",
     "contactCta": "Kontakt aufnehmen",
     "signOut": "Abmelden"
+  },
+  "plan": {
+    "title": "Dein Tarif",
+    "currentPlanSubtitle": "Du bist im Tarif {{plan}}",
+    "trialSubtitle": "Du bist in der kostenlosen Testversion",
+    "perMonth": "pro Monat",
+    "choosePlan": "Tarif wählen",
+    "currentPlanBadge": "Aktueller Tarif",
+    "redirecting": "Weiterleitung..."
   },
   "dashboard": {
     "welcome": "Willkommen, {{name}}!",

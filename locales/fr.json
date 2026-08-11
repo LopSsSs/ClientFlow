@@ -16,6 +16,7 @@
     "calendar": "Calendrier",
     "route": "Itinéraire",
     "reports": "Rapports",
+    "plan": "Forfait",
     "settings": "Paramètres",
     "signOut": "Se déconnecter"
   },
@@ -27,6 +28,15 @@
     "expiredBody": "Les 14 jours d'essai gratuit de ClientFlow sont terminés. Contactez-nous pour continuer à utiliser l'application.",
     "contactCta": "Nous contacter",
     "signOut": "Se déconnecter"
+  },
+  "plan": {
+    "title": "Votre forfait",
+    "currentPlanSubtitle": "Vous êtes sur le forfait {{plan}}",
+    "trialSubtitle": "Vous êtes en période d'essai gratuit",
+    "perMonth": "par mois",
+    "choosePlan": "Choisir",
+    "currentPlanBadge": "Forfait actuel",
+    "redirecting": "Redirection..."
   },
   "dashboard": {
     "welcome": "Bienvenue, {{name}} !",

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { useTranslation } from '@/hooks/useTranslation'
+import { usePlanCheckout } from '@/hooks/usePlanCheckout'
 import { Lock, LogOut } from 'lucide-react'
 import { PLANS } from '@/lib/plans'
 
@@ -13,30 +13,11 @@ export default function TrialExpiredScreen() {
   const { signOut } = useAuth()
   const { t } = useTranslation()
   const router = useRouter()
-  const [choosingPlan, setChoosingPlan] = useState<string | null>(null)
-  const [subscribeError, setSubscribeError] = useState('')
+  const { choosingPlan, error: subscribeError, choosePlan } = usePlanCheckout()
 
   const handleSignOut = async () => {
     await signOut()
     router.push('/auth/login')
-  }
-
-  const handleChoosePlan = async (planId: string) => {
-    setChoosingPlan(planId)
-    setSubscribeError('')
-    try {
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'No se pudo iniciar el pago')
-      window.location.href = data.url
-    } catch (err) {
-      setSubscribeError(err instanceof Error ? err.message : 'Error')
-      setChoosingPlan(null)
-    }
   }
 
   return (
@@ -54,7 +35,7 @@ export default function TrialExpiredScreen() {
               <p className="font-bold text-primary">{plan.name}</p>
               <p className="text-accent font-bold text-lg mb-3">{plan.priceLabel}<span className="text-xs font-normal text-gray-500">/mes</span></p>
               <button
-                onClick={() => handleChoosePlan(plan.id)}
+                onClick={() => choosePlan(plan.id)}
                 disabled={choosingPlan !== null}
                 className="btn-accent w-full py-2 text-sm disabled:opacity-50"
               >

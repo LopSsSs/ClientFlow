@@ -16,6 +16,7 @@
     "calendar": "Calendar",
     "route": "Route",
     "reports": "Reports",
+    "plan": "Plan",
     "settings": "Settings",
     "signOut": "Sign out"
   },
@@ -27,6 +28,15 @@
     "expiredBody": "Your 14-day ClientFlow free trial is over. Reach out to us to keep using the app.",
     "contactCta": "Contact us",
     "signOut": "Sign out"
+  },
+  "plan": {
+    "title": "Your plan",
+    "currentPlanSubtitle": "You're on the {{plan}} plan",
+    "trialSubtitle": "You're on the free trial",
+    "perMonth": "per month",
+    "choosePlan": "Choose Plan",
+    "currentPlanBadge": "Current plan",
+    "redirecting": "Redirecting..."
   },
   "dashboard": {
     "welcome": "Welcome, {{name}}!",
