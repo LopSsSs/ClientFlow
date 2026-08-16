@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { CheckCircle2, XCircle } from 'lucide-react'
 import { buildPaypalPaymentUrl } from '@/lib/paypal'
 
@@ -15,6 +15,9 @@ interface InvoiceSummary {
   client_name: string | null
   currency: string
   payment_paypal_email: string | null
+  payment_bizum_phone: string | null
+  payment_transfer_enabled: boolean
+  payment_transfer_iban: string | null
 }
 
 const CURRENCY_SYMBOLS: Record<string, string> = { EUR: '€', USD: '$', GBP: '£', CHF: 'CHF ' }
@@ -24,17 +27,12 @@ function formatMoney(value: number, currency: string): string {
   return `${symbol}${value.toFixed(2)}`
 }
 
-
 export default function PayInvoicePage() {
   const params = useParams<{ invoiceId: string }>()
-  const searchParams = useSearchParams()
-  const checkoutResult = searchParams.get('status')
 
   const [invoice, setInvoice] = useState<InvoiceSummary | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [paying, setPaying] = useState(false)
-  const [payError, setPayError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`/api/pay/${params.invoiceId}`)
@@ -46,20 +44,6 @@ export default function PayInvoicePage() {
       .catch((err) => setLoadError(err instanceof Error ? err.message : 'Error'))
       .finally(() => setLoading(false))
   }, [params.invoiceId])
-
-  const handlePay = async () => {
-    setPaying(true)
-    setPayError(null)
-    try {
-      const res = await fetch(`/api/pay/${params.invoiceId}/checkout`, { method: 'POST' })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error === 'not_found' ? 'Factura no encontrada' : 'No se pudo iniciar el pago')
-      window.location.href = data.url
-    } catch (err) {
-      setPayError(err instanceof Error ? err.message : 'Error')
-      setPaying(false)
-    }
-  }
 
   if (loading) {
     return <div className="min-h-screen bg-light flex items-center justify-center">Cargando...</div>
@@ -78,6 +62,8 @@ export default function PayInvoicePage() {
 
   const total = invoice.amount + invoice.tax
   const isPaid = invoice.status === 'paid'
+  const hasTransfer = invoice.payment_transfer_enabled && invoice.payment_transfer_iban
+  const hasAnyPaymentMethod = invoice.payment_paypal_email || invoice.payment_bizum_phone || hasTransfer
 
   return (
     <div className="min-h-screen bg-light flex items-center justify-center p-6">
@@ -100,15 +86,7 @@ export default function PayInvoicePage() {
             <span className="font-medium">Esta factura ya está pagada</span>
           </div>
         ) : (
-          <>
-            {checkoutResult === 'cancelled' && (
-              <p className="text-sm text-orange-600 mb-3">Pago cancelado. Puedes intentarlo de nuevo.</p>
-            )}
-            <button onClick={handlePay} disabled={paying} className="btn-accent w-full">
-              {paying ? 'Redirigiendo...' : 'Pincha aquí para pagar'}
-            </button>
-            {payError && <p className="text-red-600 text-sm mt-3 text-center">{payError}</p>}
-
+          <div className="space-y-3">
             {invoice.payment_paypal_email && (
               <a
                 href={buildPaypalPaymentUrl(
@@ -117,12 +95,32 @@ export default function PayInvoicePage() {
                   invoice.currency,
                   `Factura ${invoice.invoice_number} - ${invoice.business_name}`
                 )}
-                className="btn-secondary w-full block text-center mt-3"
+                className="btn-accent w-full block text-center"
               >
                 Pagar con PayPal
               </a>
             )}
-          </>
+
+            {invoice.payment_bizum_phone && (
+              <div className="bg-light rounded-lg p-3 text-center">
+                <p className="text-sm text-gray-600">Bizum</p>
+                <p className="font-bold text-primary">{invoice.payment_bizum_phone}</p>
+              </div>
+            )}
+
+            {hasTransfer && (
+              <div className="bg-light rounded-lg p-3 text-center">
+                <p className="text-sm text-gray-600">Transferencia bancaria</p>
+                <p className="font-bold text-primary break-all">{invoice.payment_transfer_iban}</p>
+              </div>
+            )}
+
+            {!hasAnyPaymentMethod && (
+              <p className="text-sm text-gray-500 text-center">
+                Contacta con {invoice.business_name} para conocer las formas de pago disponibles.
+              </p>
+            )}
+          </div>
         )}
       </div>
     </div>
