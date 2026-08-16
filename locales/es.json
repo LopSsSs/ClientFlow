@@ -326,7 +326,13 @@
     "body": "Confirma tu correo electrónico para activar tu cuenta en {{companyName}}.",
     "cta": "Verificar mi correo",
     "expiryNote": "Este enlace caduca en 24 horas.",
-    "ignoreNote": "Si no creaste esta cuenta, puedes ignorar este mensaje."
+    "ignoreNote": "Si no creaste esta cuenta, puedes ignorar este mensaje.",
+    "screenTitle": "Verifica tu correo electrónico",
+    "screenBody": "Te hemos enviado un enlace de verificación a {{email}}. Ábrelo para activar tu cuenta y poder entrar.",
+    "screenExpired": "¿No te ha llegado?",
+    "resendButton": "Reenviar email de verificación",
+    "resendSent": "Email reenviado. Revisa tu bandeja de entrada.",
+    "resendError": "No se pudo reenviar el email. Inténtalo de nuevo."
   },
   "invoiceEmail": {
     "subject": "Factura {{invoiceNumber}} de {{companyName}}",

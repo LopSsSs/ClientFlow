@@ -326,7 +326,13 @@
     "body": "Confirmez votre adresse e-mail pour activer votre compte sur {{companyName}}.",
     "cta": "Vérifier mon e-mail",
     "expiryNote": "Ce lien expire dans 24 heures.",
-    "ignoreNote": "Si vous n'êtes pas à l'origine de ce compte, vous pouvez ignorer ce message."
+    "ignoreNote": "Si vous n'êtes pas à l'origine de ce compte, vous pouvez ignorer ce message.",
+    "screenTitle": "Vérifiez votre email",
+    "screenBody": "Nous avons envoyé un lien de vérification à {{email}}. Ouvrez-le pour activer votre compte et vous connecter.",
+    "screenExpired": "Vous ne l'avez pas reçu ?",
+    "resendButton": "Renvoyer l'email de vérification",
+    "resendSent": "Email renvoyé. Vérifiez votre boîte de réception.",
+    "resendError": "Impossible de renvoyer l'email. Réessayez."
   },
   "invoiceEmail": {
     "subject": "Facture {{invoiceNumber}} de {{companyName}}",
