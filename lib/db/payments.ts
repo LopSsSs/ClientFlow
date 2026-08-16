@@ -11,6 +11,7 @@ export interface InvoiceForPayment {
   business_name: string
   currency: string
   client_name: string | null
+  payment_paypal_email: string | null
 }
 
 export async function getInvoiceForPayment(
@@ -19,10 +20,12 @@ export async function getInvoiceForPayment(
   const result = await sql<InvoiceForPayment[]>`
     SELECT i.id, i.invoice_number, i.amount, i.tax, i.status,
            b.name AS business_name, b.currency AS currency,
-           c.name AS client_name
+           c.name AS client_name,
+           bs.payment_paypal_email AS payment_paypal_email
     FROM invoices i
     JOIN businesses b ON b.id = i.business_id
     LEFT JOIN clients c ON c.id = i.client_id
+    LEFT JOIN business_settings bs ON bs.business_id = i.business_id
     WHERE i.id = ${invoiceId}
   `
   return result[0]

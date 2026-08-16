@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { CheckCircle2, XCircle } from 'lucide-react'
+import { buildPaypalPaymentUrl } from '@/lib/paypal'
 
 interface InvoiceSummary {
   id: string
@@ -13,6 +14,7 @@ interface InvoiceSummary {
   business_name: string
   client_name: string | null
   currency: string
+  payment_paypal_email: string | null
 }
 
 const CURRENCY_SYMBOLS: Record<string, string> = { EUR: '€', USD: '$', GBP: '£', CHF: 'CHF ' }
@@ -21,6 +23,7 @@ function formatMoney(value: number, currency: string): string {
   const symbol = CURRENCY_SYMBOLS[currency] ?? `${currency} `
   return `${symbol}${value.toFixed(2)}`
 }
+
 
 export default function PayInvoicePage() {
   const params = useParams<{ invoiceId: string }>()
@@ -105,6 +108,20 @@ export default function PayInvoicePage() {
               {paying ? 'Redirigiendo...' : 'Pincha aquí para pagar'}
             </button>
             {payError && <p className="text-red-600 text-sm mt-3 text-center">{payError}</p>}
+
+            {invoice.payment_paypal_email && (
+              <a
+                href={buildPaypalPaymentUrl(
+                  invoice.payment_paypal_email,
+                  total,
+                  invoice.currency,
+                  `Factura ${invoice.invoice_number} - ${invoice.business_name}`
+                )}
+                className="btn-secondary w-full block text-center mt-3"
+              >
+                Pagar con PayPal
+              </a>
+            )}
           </>
         )}
       </div>
