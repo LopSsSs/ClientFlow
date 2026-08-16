@@ -2,6 +2,7 @@ import { getEmailService } from '@/services/email'
 import { buildInvoiceEmailTemplate } from '@/services/email/templates/invoiceEmailTemplate'
 import { generateInvoicePDF } from '@/lib/invoiceGenerator'
 import { getInvoice, updateInvoice } from '@/lib/neon'
+import { getBusinessSettings } from '@/lib/db/businessSettings'
 
 export type SendInvoiceEmailResult =
   | { ok: true }
@@ -28,7 +29,9 @@ export async function sendInvoiceEmail(
   const totalAmount = Number(invoice.amount) + Number(invoice.tax)
   const amountLabel = `€${totalAmount.toFixed(2)}`
 
-  const doc = generateInvoicePDF(
+  const settings = await getBusinessSettings(businessId)
+
+  const doc = await generateInvoicePDF(
     {
       id: invoice.id,
       invoice_number: invoice.invoice_number,
@@ -39,7 +42,22 @@ export async function sendInvoiceEmail(
       client_phone: invoice.client_phone,
       client_address: invoice.client_address,
     },
-    { name: businessName }
+    {
+      name: businessName,
+      logo_url: settings?.logo_url ?? null,
+      color_primary: settings?.color_primary,
+      color_secondary: settings?.color_secondary,
+      company_cif: settings?.company_cif,
+      company_email: settings?.company_email,
+      company_address: settings?.company_address,
+      payment_paypal_email: settings?.payment_paypal_email,
+      payment_bizum_phone: settings?.payment_bizum_phone,
+      payment_transfer_enabled: settings?.payment_transfer_enabled,
+      payment_transfer_iban: settings?.payment_transfer_iban,
+      invoice_terms_text: settings?.invoice_terms_text,
+      currency: settings?.currency,
+      tax_name: settings?.tax_name,
+    }
   )
   const pdfBuffer = Buffer.from(doc.output('arraybuffer'))
 

@@ -10,6 +10,7 @@ import OverdueBadge from '@/components/OverdueBadge'
 import { useTranslation } from '@/hooks/useTranslation'
 import { useNotification } from '@/store/notificationStore'
 import { toBCP47 } from '@/utils/i18n'
+import { useInvoiceSettings } from '@/hooks/useInvoiceSettings'
 import { FileText, Trash2, Plus, Download, Edit2, CreditCard, Mail } from 'lucide-react'
 import Modal from '@/components/Modal'
 
@@ -17,6 +18,7 @@ export default function InvoicesPage() {
   const { business, user, loading } = useAuth()
   const { t, locale } = useTranslation()
   const { notifyEmail, notifyError } = useNotification()
+  const { settings: invoiceSettings } = useInvoiceSettings()
   const [invoices, setInvoices] = useState([])
   const [jobs, setJobs] = useState([])
   const [loadingInvoices, setLoadingInvoices] = useState(true)
@@ -122,9 +124,9 @@ export default function InvoicesPage() {
     }
   }
 
-  const generatePDF = (invoice) => {
+  const generatePDF = async (invoice) => {
     const jobData = jobs.find(j => j.id === invoice.job_id)
-    
+
     const invoiceData = {
       id: invoice.id,
       invoice_number: invoice.invoice_number,
@@ -137,8 +139,34 @@ export default function InvoicesPage() {
       description: jobData?.title || t('invoices.defaultServiceDescription'),
     }
 
-    const doc = generateInvoicePDF(invoiceData, business)
-    downloadInvoice(doc, invoice.invoice_number)
+    // Los datos de personalización (logo, colores, país/impuesto, métodos de
+    // pago) viven en business_settings, no en `business`. El logo cae de
+    // vuelta al del negocio si no hay uno propio para facturas.
+    const businessForPdf = {
+      name: business.name,
+      phone: business.phone,
+      whatsapp_number: business.whatsapp_number,
+      logo_url: invoiceSettings?.logo_url || business.logo_url || null,
+      color_primary: invoiceSettings?.color_primary,
+      color_secondary: invoiceSettings?.color_secondary,
+      company_cif: invoiceSettings?.company_cif,
+      company_email: invoiceSettings?.company_email,
+      company_address: invoiceSettings?.company_address,
+      payment_paypal_email: invoiceSettings?.payment_paypal_email,
+      payment_bizum_phone: invoiceSettings?.payment_bizum_phone,
+      payment_transfer_enabled: invoiceSettings?.payment_transfer_enabled,
+      payment_transfer_iban: invoiceSettings?.payment_transfer_iban,
+      invoice_terms_text: invoiceSettings?.invoice_terms_text,
+      currency: invoiceSettings?.currency,
+      tax_name: invoiceSettings?.tax_name,
+    }
+
+    try {
+      const doc = await generateInvoicePDF(invoiceData, businessForPdf)
+      downloadInvoice(doc, invoice.invoice_number)
+    } catch (error) {
+      notifyError(`No se pudo generar el PDF: ${error.message}`)
+    }
   }
 
   const handleSendEmail = async (invoice) => {

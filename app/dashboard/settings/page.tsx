@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, type FormEvent } from 'react'
+import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
 import { updateBusiness } from '@/lib/api'
@@ -158,6 +159,12 @@ export default function SettingsPage() {
 
         <div className="mt-6">
           <MessageTemplatesForm />
+        </div>
+
+        <div className="mt-6">
+          <Link href="/dashboard/settings/invoices" className="card block hover:bg-gray-50 transition-colors">
+            <span className="font-medium text-primary">{t('settings.invoiceLink')}</span>
+          </Link>
         </div>
       </div>
     </div>
