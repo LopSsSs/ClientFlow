@@ -130,9 +130,6 @@ export function AuthProvider({ children }) {
     signOut,
     // Permite reflejar cambios de negocio (p.ej. desde Configuración) sin recargar la sesión.
     setBusiness,
-    // Vuelve a pedir /api/auth/me: lo usa la pantalla de "verifica tu email" para
-    // detectar que el usuario ya verificó (en otra pestaña) sin tener que recargar.
-    refreshAuth: checkAuth,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
