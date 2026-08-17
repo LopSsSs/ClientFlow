@@ -327,6 +327,9 @@
     "cta": "E-Mail bestätigen",
     "expiryNote": "Dieser Link läuft in 24 Stunden ab.",
     "ignoreNote": "Wenn du dieses Konto nicht erstellt hast, kannst du diese Nachricht ignorieren.",
+    "screenTitle": "Bestätige deine E-Mail-Adresse",
+    "screenBody": "Wir haben einen Bestätigungslink an {{email}} gesendet. Öffne ihn, um dein Konto zu aktivieren und dich anzumelden.",
+    "screenExpired": "Nicht angekommen?",
     "resendButton": "Bestätigungs-E-Mail erneut senden",
     "resendSent": "E-Mail erneut gesendet. Prüfe deinen Posteingang.",
     "resendError": "Die E-Mail konnte nicht erneut gesendet werden. Versuche es noch einmal."

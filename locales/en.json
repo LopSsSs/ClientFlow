@@ -327,6 +327,9 @@
     "cta": "Verify my email",
     "expiryNote": "This link expires in 24 hours.",
     "ignoreNote": "If you didn't create this account, you can safely ignore this message.",
+    "screenTitle": "Verify your email",
+    "screenBody": "We've sent a verification link to {{email}}. Open it to activate your account and sign in.",
+    "screenExpired": "Didn't get it?",
     "resendButton": "Resend verification email",
     "resendSent": "Email resent. Check your inbox.",
     "resendError": "Couldn't resend the email. Try again."

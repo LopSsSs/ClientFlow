@@ -25,6 +25,7 @@ export interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ user: AuthUser; business: Business }>
   signOut: () => Promise<void>
   setBusiness: (business: Business | null) => void
+  refreshAuth: () => Promise<void>
 }
 
 export function AuthProvider(props: { children: ReactNode }): JSX.Element

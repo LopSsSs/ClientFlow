@@ -7,7 +7,6 @@ import Navbar from '@/components/Navbar'
 import { updateBusiness } from '@/lib/api'
 import { isValidPhone } from '@/utils/phone'
 import { useTranslation } from '@/hooks/useTranslation'
-import { useNotification } from '@/store/notificationStore'
 import MessageTemplatesForm from '@/components/settings/MessageTemplatesForm'
 
 interface SettingsFormState {
@@ -27,30 +26,12 @@ const EMPTY_FORM: SettingsFormState = {
 }
 
 export default function SettingsPage() {
-  const { user, business, loading, setBusiness } = useAuth()
+  const { business, loading, setBusiness } = useAuth()
   const { t } = useTranslation()
-  const { notifySuccess, notifyError } = useNotification()
   const [form, setForm] = useState<SettingsFormState>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [savedAt, setSavedAt] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [resendingVerification, setResendingVerification] = useState(false)
-
-  const handleResendVerification = async () => {
-    setResendingVerification(true)
-    try {
-      const res = await fetch('/api/auth/resend-verification', { method: 'POST', credentials: 'include' })
-      if (res.ok) {
-        notifySuccess(t('emailVerification.resendSent'))
-      } else {
-        notifyError(t('emailVerification.resendError'))
-      }
-    } catch {
-      notifyError(t('emailVerification.resendError'))
-    } finally {
-      setResendingVerification(false)
-    }
-  }
 
   useEffect(() => {
     if (!business) return
@@ -175,20 +156,6 @@ export default function SettingsPage() {
             {savedAt && <span className="text-sm text-green-700">{t('settings.saved')}</span>}
           </div>
         </form>
-
-        {user && !user.email_verified && (
-          <div className="card mt-6 flex items-center justify-between gap-4">
-            <p className="text-sm text-gray-600">{t('emailVerification.body', { companyName: business.name })}</p>
-            <button
-              type="button"
-              onClick={handleResendVerification}
-              disabled={resendingVerification}
-              className="btn-secondary text-sm whitespace-nowrap"
-            >
-              {resendingVerification ? '...' : t('emailVerification.resendButton')}
-            </button>
-          </div>
-        )}
 
         <div className="mt-6">
           <MessageTemplatesForm />

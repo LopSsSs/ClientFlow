@@ -1,10 +1,19 @@
 import { createUser, createBusiness } from '@/lib/neon'
 import { startTrial, getSubscription } from '@/lib/db/subscriptions'
+import { isSignupRateLimited, recordSignupAttempt } from '@/lib/db/signupAttempts'
 import { sendVerificationEmail } from '@/services/auth/emailVerification.service'
 import { isSupportedLocale, DEFAULT_LOCALE } from '@/types/i18n'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { NextResponse } from 'next/server'
+
+// Vercel pone la IP real del visitante en x-forwarded-for (el primer valor
+// de la lista, antes de cualquier proxy intermedio).
+function getClientIp(req) {
+  const forwardedFor = req.headers.get('x-forwarded-for')
+  if (forwardedFor) return forwardedFor.split(',')[0].trim()
+  return req.headers.get('x-real-ip') || 'unknown'
+}
 
 export async function POST(req) {
   try {
@@ -31,11 +40,20 @@ export async function POST(req) {
       )
     }
 
+    const clientIp = getClientIp(req)
+    if (await isSignupRateLimited(clientIp)) {
+      return NextResponse.json(
+        { error: 'Demasiadas cuentas creadas desde esta conexión. Inténtalo de nuevo más tarde.' },
+        { status: 429 }
+      )
+    }
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
     // Create user
     const user = await createUser(email, hashedPassword)
+    await recordSignupAttempt(clientIp)
 
     // Create business
     const business = await createBusiness(user.id, { name: businessName })
