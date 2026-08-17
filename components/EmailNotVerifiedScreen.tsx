@@ -71,7 +71,10 @@ export default function EmailNotVerifiedScreen() {
         </p>
 
         {secondsLeft > 0 ? (
-          <p className="text-3xl font-bold text-primary mb-6 tabular-nums">{formatTime(secondsLeft)}</p>
+          <>
+            <p className="text-3xl font-bold text-primary mb-2 tabular-nums">{formatTime(secondsLeft)}</p>
+            <p className="text-sm text-gray-500 mb-6">{t('emailVerification.screenSpamHint')}</p>
+          </>
         ) : (
           <div className="mb-6">
             <p className="text-gray-600 mb-3">{t('emailVerification.screenExpired')}</p>

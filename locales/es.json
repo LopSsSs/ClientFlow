@@ -332,7 +332,8 @@
     "screenExpired": "¿No te ha llegado?",
     "resendButton": "Reenviar email de verificación",
     "resendSent": "Email reenviado. Revisa tu bandeja de entrada.",
-    "resendError": "No se pudo reenviar el email. Inténtalo de nuevo."
+    "resendError": "No se pudo reenviar el email. Inténtalo de nuevo.",
+    "screenSpamHint": "Si no lo encuentras, revisa también la carpeta de spam o correo no deseado."
   },
   "invoiceEmail": {
     "subject": "Factura {{invoiceNumber}} de {{companyName}}",

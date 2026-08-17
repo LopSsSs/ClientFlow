@@ -332,7 +332,8 @@
     "screenExpired": "Didn't get it?",
     "resendButton": "Resend verification email",
     "resendSent": "Email resent. Check your inbox.",
-    "resendError": "Couldn't resend the email. Try again."
+    "resendError": "Couldn't resend the email. Try again.",
+    "screenSpamHint": "Can't find it? Check your spam or junk folder too."
   },
   "invoiceEmail": {
     "subject": "Invoice {{invoiceNumber}} from {{companyName}}",

@@ -332,7 +332,8 @@
     "screenExpired": "Nicht angekommen?",
     "resendButton": "Bestätigungs-E-Mail erneut senden",
     "resendSent": "E-Mail erneut gesendet. Prüfe deinen Posteingang.",
-    "resendError": "Die E-Mail konnte nicht erneut gesendet werden. Versuche es noch einmal."
+    "resendError": "Die E-Mail konnte nicht erneut gesendet werden. Versuche es noch einmal.",
+    "screenSpamHint": "Nichts gefunden? Schau auch in deinem Spam- oder Junk-Ordner nach."
   },
   "invoiceEmail": {
     "subject": "Rechnung {{invoiceNumber}} von {{companyName}}",
