@@ -1,3 +1,28 @@
+<p align="center"><img src="docs/img/banner.svg" alt="ClientFlow" width="100%"></p>
+
+<p align="center">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white&style=flat-square">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white&style=flat-square">
+  <img alt="Neon" src="https://img.shields.io/badge/Neon-Postgres-00e599?logo=postgresql&logoColor=white&style=flat-square">
+  <img alt="Stripe" src="https://img.shields.io/badge/Stripe-pagos-635bff?logo=stripe&logoColor=white&style=flat-square">
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-producción-000000?logo=vercel&logoColor=white&style=flat-square">
+</p>
+
+<p align="center"><a href="https://clientflow-nine-gold.vercel.app"><b>🌐 Ver la web</b></a></p>
+
+<table>
+  <tr>
+    <td width="70%"><img src="docs/img/clientflow-desktop.png" alt="Portada de ClientFlow"></td>
+    <td width="30%" align="center"><img src="docs/img/clientflow-mobile.png" alt="ClientFlow en el móvil" width="220"></td>
+  </tr>
+</table>
+
+| | |
+|---|---|
+| 👥 **Clientes** | Ficha completa: teléfono, email, dirección y notas. |
+| 🧰 **Trabajos** | Crea, asigna y sigue cada trabajo de pendiente a completado. |
+| 🧾 **Facturas** | PDF automático y envío por email al cliente; cobros con Stripe. |
+
 # ClientFlow - CRM + Facturación para Servicios de Campo
 
 Sistema completo de gestión de clientes, trabajos y facturación para jardineros, plomeros y otros servicios.
